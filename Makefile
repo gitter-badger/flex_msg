@@ -5,7 +5,7 @@ DEPS=erts kernel stdlib
 
 .PHONY: offline compile get-deps update-deps test clean deep-clean
 
-offline:
+offline: test
 	@./rebar compile
 
 compile: get-deps update-deps
