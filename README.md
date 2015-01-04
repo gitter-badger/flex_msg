@@ -1,4 +1,4 @@
-flex_msg
+flex_msg [![Build Status](https://travis-ci.org/shun159/flex_msg.svg?branch=master)](https://travis-ci.org/shun159/flex_msg)
 ========
 
 Erlang OpenFlow Packet Library.
@@ -13,7 +13,7 @@ Erlang OpenFlow Packet Library.
   Msg = flex_msg_v1:prepend_of_header(Xid, flex_msg_v1:hello()),
   flex_msg_v1:encode(Msg).
   ````
-  
+
 ### OpenFlow Error
   ````erlang
   Body = flex_msg_v1:openflow_error(hello_failed, incompatible, <<>>),
@@ -53,7 +53,7 @@ Erlang OpenFlow Packet Library.
   Msg = flex_msg_v1:prepend_of_header(Xid, Body),
   flex_msg_v1:encode(Msg).
   ````
-  
+
 ### Get Config
   ````erlang
   Body = flex_msg_v1:get_config(),
@@ -81,7 +81,7 @@ Erlang OpenFlow Packet Library.
   flex_msg_v1:encode(Msg).
   ````
 
-### Set Port Not PacketIn 
+### Set Port Not PacketIn
   ````erlang
   Body = flex_msg_v1:set_port_no_packet_in(1, <<0,0,0,0,0,1>>),
   Msg = flex_msg_v1:prepend_of_header(Xid, Body),
