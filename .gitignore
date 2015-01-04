@@ -1,0 +1,17 @@
+/apps/*/ebin/
+/apps/*/.eunit/
+/apps/*/doc/
+/apps/*/log/
+/ebin/
+/.eunit/
+/doc/
+/log/
+/deps/
+/scripts/log
+*.beam
+*.app
+*.o
+*.eqc
+*.plt
+erl_crash.dump
+*~
