@@ -5,6 +5,182 @@
 
 -define(MODNAME, flex_msg_v1).
 
+prepend_of_header_hello_test() ->
+    Msg1 = messages(hello),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_openflow_error_test() ->
+    Msg1 = messages(openflow_error),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_echo_request_test() ->
+    Msg1 = messages(echo_request),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_echo_reply_test() ->
+    Msg1 = messages(echo_reply),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_barrier_test() ->
+    Msg1 = messages(barrier),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_vendor_test() ->
+    Msg1 = messages(vendor),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_get_features_test() ->
+    Msg1 = messages(get_features),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_get_config_test() ->
+    Msg1 = messages(get_config),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_set_config_test() ->
+    Msg1 = messages(set_config),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_set_port_up_test() ->
+    Msg1 = messages(set_port_up),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_set_port_down_test() ->
+    Msg1 = messages(set_port_down),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_set_port_packet_in_test() ->
+    Msg1 = messages(set_port_packet_in),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_set_port_no_packet_in_test() ->
+    Msg1 = messages(set_port_no_packet_in),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_set_port_modes_test() ->
+    Msg1 = messages(set_port_modes),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_get_queue_config_test() ->
+    Msg1 = messages(get_queue_config),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_get_switch_description_test() ->
+    Msg1 = messages(get_switch_description),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_get_flow_stats_test() ->
+    Msg1 = messages(get_flow_stats),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    io:format("DecMsg: ~w~n", [DecMsg]),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_get_aggregate_stats_test() ->
+    Msg1 = messages(get_aggregate_stats),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    io:format("DecMsg: ~w~n", [DecMsg]),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_get_table_stats_test() ->
+    Msg1 = messages(get_table_stats),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    io:format("DecMsg: ~w~n", [DecMsg]),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_get_port_stats_test() ->
+    Msg1 = messages(get_port_stats),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    io:format("DecMsg: ~w~n", [DecMsg]),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_send_packet_test() ->
+    Msg1 = messages(send_packet),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    io:format("DecMsg: ~w~n", [DecMsg]),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_add_flow_test() ->
+    Msg1 = messages(add_flow),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    io:format("DecMsg: ~w~n", [DecMsg]),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_modify_flow_test() ->
+    Msg1 = messages(modify_flow),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    io:format("DecMsg: ~w~n", [DecMsg]),
+    ?assertEqual(Msg2, DecMsg).
+
+prepend_of_header_delete_flow_test() ->
+    Msg1 = messages(delete_flow),
+    Msg2 = ?MODNAME:prepend_of_header(0, Msg1),
+    EncMsg = ?MODNAME:encode(Msg2),
+    {ok, DecMsg, _Rest } = ?MODNAME:decode(EncMsg),
+    io:format("DecMsg: ~w~n", [DecMsg]),
+    ?assertEqual(Msg2, DecMsg).
+
 hello_test() ->
     Msg = ?MODNAME:hello(),
     ?assertEqual(messages(hello), Msg).
@@ -265,7 +441,8 @@ messages(Type) ->
             #ofp_stats_request{ type = desc, flags = [],
                                 body = #ofp_desc_stats_request{} };
         get_flow_stats ->
-            Matches = #ofp_match{ in_port = 1,
+            Matches = #ofp_match{ wildcards = 399360,
+                                  in_port = 1,
                                   dl_src = <<0,0,0,0,0,10>>,
                                   dl_dst = <<0,0,0,0,0,20>>,
                                   dl_vlan_pcp = 0,
@@ -282,7 +459,8 @@ messages(Type) ->
             Body = #ofp_flow_stats_request{ match = Matches, table_id = 0 },
             #ofp_stats_request{ type = flow, body = Body };
         get_aggregate_stats ->
-            Matches = #ofp_match{ in_port = 1,
+            Matches = #ofp_match{ wildcards = 399360,
+                                  in_port = 1,
                                   dl_src = <<0,0,0,0,0,10>>,
                                   dl_dst = <<0,0,0,0,0,20>>,
                                   dl_vlan_pcp = 0,
@@ -383,7 +561,8 @@ messages(Type) ->
                       #ofp_action_header{ type = output,
                                           body = #ofp_action_output{ port = 1,
                                                                      max_len = 128 }}] ,
-            #ofp_flow_mod{ match = #ofp_match{ in_port = 1,
+            #ofp_flow_mod{ match = #ofp_match{ wildcards = 399360,
+                                               in_port = 1,
                                                dl_src = <<0,0,0,0,0,10>>,
                                                dl_dst = <<0,0,0,0,0,20>>,
                                                dl_vlan_pcp = 0,
@@ -438,7 +617,8 @@ messages(Type) ->
                       #ofp_action_header{ type = output,
                                           body = #ofp_action_output{ port = 1,
                                                                      max_len = 128 }}] ,
-            #ofp_flow_mod{ match = #ofp_match{ in_port = 1,
+            #ofp_flow_mod{ match = #ofp_match{ wildcards = 399360,
+                                               in_port = 1,
                                                dl_src = <<0,0,0,0,0,10>>,
                                                dl_dst = <<0,0,0,0,0,20>>,
                                                dl_vlan_pcp = 0,
@@ -460,7 +640,8 @@ messages(Type) ->
                            flags = [send_flow_rem],
                            actions = Actions };
         delete_flow ->
-            #ofp_flow_mod{ match = #ofp_match{ in_port = 1,
+            #ofp_flow_mod{ match = #ofp_match{ wildcards = 399360,
+                                               in_port = 1,
                                                dl_src = <<0,0,0,0,0,10>>,
                                                dl_dst = <<0,0,0,0,0,20>>,
                                                dl_vlan_pcp = 0,

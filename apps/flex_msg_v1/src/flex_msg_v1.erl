@@ -224,30 +224,56 @@ create_matches([Match | Rest], EncMatches) ->
     EncMatches2 = create_match(EncMatches, Match),
     create_matches(Rest, EncMatches2).
 
-create_match(Match, { in_port, InPort }) ->
-    Match#ofp_match{ in_port = InPort };
-create_match(Match, { dl_src, DlSrc }) ->
-    Match#ofp_match{ dl_src = DlSrc };
-create_match(Match, { dl_dst, DlDst }) ->
-    Match#ofp_match{ dl_dst = DlDst };
-create_match(Match, { dl_vlan, DlVlan }) ->
-    Match#ofp_match{ dl_vlan = DlVlan };
-create_match(Match, { dl_vlan_pcp, DlVlanPcp }) ->
-    Match#ofp_match{ dl_vlan_pcp = DlVlanPcp };
-create_match(Match, { dl_type, DlType }) ->
-    Match#ofp_match{ dl_type = DlType };
-create_match(Match, { nw_tos, NwTos }) ->
-    Match#ofp_match{ nw_tos = NwTos };
-create_match(Match, { nw_proto, NwProto }) ->
-    Match#ofp_match{ nw_proto = NwProto };
-create_match(Match, { nw_src, NwAddr, NwAddrMask }) ->
-    Match#ofp_match{ nw_src = NwAddr, nw_src_mask = NwAddrMask };
-create_match(Match, { nw_dst, NwAddr, NwAddrMask }) ->
-    Match#ofp_match{ nw_dst = NwAddr, nw_dst_mask = NwAddrMask };
-create_match(Match, { tp_src, TpSrc }) ->
-    Match#ofp_match{ tp_src = TpSrc };
-create_match(Match, { tp_dst, TpDst }) ->
-    Match#ofp_match{ tp_dst = TpDst }.
+create_match(#ofp_match{wildcards = Wildcards } = Match,
+             { in_port, InPort }) ->
+    Wildcards2 = Wildcards band (bnot ?OFPFW_IN_PORT),
+    Match#ofp_match{ in_port = InPort, wildcards = Wildcards2 };
+create_match(#ofp_match{wildcards = Wildcards } = Match,
+             { dl_src, DlSrc }) ->
+    Wildcards2 = Wildcards band (bnot ?OFPFW_DL_SRC),
+    Match#ofp_match{ dl_src = DlSrc, wildcards = Wildcards2 };
+create_match(#ofp_match{wildcards = Wildcards } = Match,
+             { dl_dst, DlDst }) ->
+    Wildcards2 = Wildcards band (bnot ?OFPFW_DL_DST),
+    Match#ofp_match{ dl_dst = DlDst, wildcards = Wildcards2 };
+create_match(#ofp_match{wildcards = Wildcards } = Match,
+             { dl_vlan, DlVlan }) ->
+    Wildcards2 = Wildcards band (bnot ?OFPFW_DL_VLAN),
+    Match#ofp_match{ dl_vlan = DlVlan, wildcards = Wildcards2 };
+create_match(#ofp_match{wildcards = Wildcards } = Match,
+             { dl_vlan_pcp, DlVlanPcp }) ->
+    Wildcards2 = Wildcards band (bnot ?OFPFW_DL_VLAN_PCP),
+    Match#ofp_match{ dl_vlan_pcp = DlVlanPcp, wildcards = Wildcards2 };
+create_match(#ofp_match{wildcards = Wildcards } = Match,
+             { dl_type, DlType }) ->
+    Wildcards2 = Wildcards band (bnot ?OFPFW_DL_TYPE),
+    Match#ofp_match{ dl_type = DlType, wildcards = Wildcards2 };
+create_match(#ofp_match{wildcards = Wildcards } = Match,
+             { nw_tos, NwTos }) ->
+    Wildcards2 = Wildcards band (bnot ?OFPFW_NW_TOS),
+    Match#ofp_match{ nw_tos = NwTos, wildcards = Wildcards2 };
+create_match(#ofp_match{wildcards = Wildcards } = Match,
+             { nw_proto, NwProto }) ->
+    Wildcards2 = Wildcards band (bnot ?OFPFW_NW_PROTO),
+    Match#ofp_match{ nw_proto = NwProto, wildcards = Wildcards2 };
+create_match(#ofp_match{wildcards = Wildcards } = Match,
+             { nw_src, NwAddr, NwAddrMask }) ->
+    Wildcards2 = Wildcards band (bnot ?OFPFW_NW_SRC_MASK),
+    Wildcards3 = Wildcards2 bor ((32 - NwAddrMask) bsl ?OFPFW_NW_SRC_SHIFT),
+    Match#ofp_match{ nw_src = NwAddr, nw_src_mask = NwAddrMask, wildcards = Wildcards3 };
+create_match(#ofp_match{wildcards = Wildcards } = Match,
+             { nw_dst, NwAddr, NwAddrMask }) ->
+    Wildcards2 = Wildcards band (bnot ?OFPFW_NW_DST_MASK),
+    Wildcards3 = Wildcards2 bor ((32 - NwAddrMask) bsl ?OFPFW_NW_DST_SHIFT),
+    Match#ofp_match{ nw_dst = NwAddr, nw_dst_mask = NwAddrMask, wildcards = Wildcards3 };
+create_match(#ofp_match{wildcards = Wildcards } = Match,
+             { tp_src, TpSrc }) ->
+    Wildcards2 = Wildcards band (bnot ?OFPFW_TP_SRC),
+    Match#ofp_match{ tp_src = TpSrc, wildcards = Wildcards2 };
+create_match(#ofp_match{wildcards = Wildcards } = Match,
+             { tp_dst, TpDst }) ->
+    Wildcards2 = Wildcards band (bnot ?OFPFW_TP_DST),
+    Match#ofp_match{ tp_dst = TpDst, wildcards = Wildcards2 }.
 
 create_actions(Actions) -> create_actions(Actions, []).
 
