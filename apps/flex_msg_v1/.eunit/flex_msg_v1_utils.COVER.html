@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>.eunit/flex_msg_v1_utils.COVER.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /root/play/openflow/flex_msg/apps/flex_msg_v1/.eunit/flex_msg_v1_utils.erl by COVER 2015-01-04 at 15:03:19
+
+****************************************************************************
+
+        |  -module(flex_msg_v1_utils).
+        |  
+        |  -export([binary_to_flags/3,
+        |           flags_to_binary/4,
+        |           get_enum_name/3,
+        |           get_enum_value/3,
+        |           strip_string/1,
+        |           encode_string/2]).
+        |  
+        |  %%%-----------------------------------------------------------------------------
+        |  %%% Helper functions
+        |  %%%-----------------------------------------------------------------------------
+        |  
+        |  -spec get_enum_name(atom(), atom(), integer() | atom()) -&gt; integer() | atom().
+        |  get_enum_name(EnumMod, Enum, Int) when is_integer(Int) -&gt;
+        |      %% TODO: Check if it's not larger than max
+    54..|      try
+    54..|          EnumMod:to_atom(Enum, Int)
+        |      catch
+        |          throw:bad_enum -&gt;
+    20..|              Int
+        |      end;
+        |  get_enum_name(_, _, Atom) when is_atom(Atom)-&gt;
+<font color=red>     0..|      Atom.</font>
+        |  
+        |  -spec get_enum_value(atom(), atom(), integer() | atom()) -&gt; integer() | atom().
+        |  get_enum_value(EnumMod, Enum, Atom) when is_atom(Atom) -&gt;
+    34..|      try
+    34..|          EnumMod:to_int(Enum, Atom)
+        |      catch
+        |          throw:bad_enum -&gt;
+<font color=red>     0..|              Atom</font>
+        |      end;
+        |  get_enum_value(_, _, Int) when is_integer(Int) -&gt;
+    26..|      Int.
+        |  
+        |  -spec binary_to_flags(atom(), atom(), binary()) -&gt; [atom()].
+        |  binary_to_flags(EnumMod, Type, Binary) -&gt;
+    44..|      BitSize = bit_size(Binary),
+    44..|      &lt;&lt;Integer:BitSize&gt;&gt; = Binary,
+    44..|      binary_to_flags(EnumMod, Type, Integer, BitSize - 1, []).
+        |  
+        |  -spec flags_to_binary(atom(), atom(), [atom()], integer()) -&gt; binary().
+        |  flags_to_binary(EnumMod, Type, Flags, Size) -&gt;
+    44..|      flags_to_binary(EnumMod, Type, Flags, &lt;&lt;0:(Size*8)&gt;&gt;, Size*8).
+        |  
+        |  -spec strip_string(binary()) -&gt; binary().
+        |  strip_string(Binary) -&gt;
+    10..|      strip_string(Binary, size(Binary) - 1).
+        |  
+        |  -spec strip_string(binary(), integer()) -&gt; binary().
+        |  strip_string(Binary, Byte) when Byte &gt;= 0 -&gt;
+  1089..|      case binary:at(Binary, Byte) of
+  1079..|          0 -&gt; strip_string(Binary, Byte - 1);
+    10..|          _ -&gt; binary:part(Binary, 0, Byte + 1)
+        |      end;
+        |  strip_string(_, _) -&gt;
+<font color=red>     0..|      &lt;&lt;&gt;&gt;.</font>
+        |  
+        |  -spec encode_string(string() | binary(), integer()) -&gt; binary().
+        |  encode_string(String, Length) when is_list(String) -&gt;
+<font color=red>     0..|      encode_string(list_to_binary(String), Length);</font>
+        |  encode_string(Binary, Length) when byte_size(Binary) &gt;= Length - 1 -&gt;
+<font color=red>     0..|      Null = &lt;&lt;0:8&gt;&gt;,</font>
+<font color=red>     0..|      &lt;&lt;Binary:(Length - 1)/bytes, Null/bytes&gt;&gt;;</font>
+        |  encode_string(Binary, Length) -&gt;
+    10..|      PaddingLength = (Length - byte_size(Binary)) * 8,
+    10..|      Padding = &lt;&lt;0:PaddingLength&gt;&gt;,
+    10..|      &lt;&lt;Binary/bytes, Padding/bytes&gt;&gt;.
+        |  
+        |  %%%-----------------------------------------------------------------------------
+        |  %%% Internal functions
+        |  %%%-----------------------------------------------------------------------------
+        |  
+        |  -spec binary_to_flags(atom(), atom(), integer(), integer(), [atom()]) -&gt;
+        |                               [atom()].
+        |  binary_to_flags(EnumMod, Type, Integer, Bit, Flags) when Bit &gt;= 0 -&gt;
+  1168..|      case 0 /= (Integer band (1 bsl Bit)) of
+        |          true -&gt;
+    34..|              Flag = EnumMod:to_atom(Type, Bit),
+    34..|              binary_to_flags(EnumMod, Type, Integer, Bit - 1, [Flag | Flags]);
+        |          false -&gt;
+  1134..|              binary_to_flags(EnumMod, Type, Integer, Bit - 1, Flags)
+        |      end;
+        |  binary_to_flags(_, _, _, _, Flags) -&gt;
+    44..|      Flags.
+        |  
+        |  -spec flags_to_binary(atom(), atom(), [atom()], binary(), integer()) -&gt; binary().
+        |  flags_to_binary(_, _, [], Binary, _) -&gt;
+    44..|      Binary;
+        |  flags_to_binary(EnumMod, Type, [Flag | Rest], Binary, BitSize) -&gt;
+    34..|      &lt;&lt;Binary2:BitSize&gt;&gt; = Binary,
+    34..|      Bit = EnumMod:to_int(Type, Flag),
+    34..|      NewBinary = (Binary2 bor (1 bsl Bit)),
+    34..|      flags_to_binary(EnumMod, Type, Rest, &lt;&lt;NewBinary:BitSize&gt;&gt;, BitSize).
+</pre>
+</body>
+</html>

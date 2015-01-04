@@ -1,0 +1,7 @@
+{application, flex_msg_v1,
+ [{description, "OpenFlow Protocol library"},
+  {vsn, "1.0"},
+  {applications,
+   [kernel,
+    stdlib,
+    eenum]}]}.

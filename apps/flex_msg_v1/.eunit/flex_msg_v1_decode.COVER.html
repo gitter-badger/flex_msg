@@ -1,0 +1,491 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>.eunit/flex_msg_v1_decode.COVER.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /root/play/openflow/flex_msg/apps/flex_msg_v1/.eunit/flex_msg_v1_decode.erl by COVER 2015-01-04 at 15:03:19
+
+****************************************************************************
+
+        |  -module(flex_msg_v1_decode).
+        |  
+        |  -export([do/1]).
+        |  
+        |  -include("ofp_v1.hrl").
+        |  
+        |  %%------------------------------------------------------------------------------
+        |  %% API functions
+        |  %%------------------------------------------------------------------------------
+        |  
+        |  -spec do(Binary :: binary()) -&gt; { ok, ofp_message(), binary() }|
+        |                                  { error, any() }.
+        |  do(Binary) when ?OFP_HEADER_SIZE &gt; byte_size(Binary) -&gt;
+<font color=red>     0..|      { error, binary_too_small };</font>
+        |  do(&lt;&lt;_VERSION:8, _Type:8, Length:16, _/bytes&gt;&gt; = Binary) when Length &gt; byte_size(Binary) -&gt;
+<font color=red>     0..|      { error, binary_too_small };</font>
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_HELLO:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;_:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      DMsg = #ofp_header{ type = hello, xid = Xid, body = #ofp_hello{} },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_ERROR:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      &lt;&lt;TypeInt:16, CodeInt:16, Data/bytes&gt;&gt; = BodyBin,
+     1..|      Type = flex_msg_v1_enum:to_atom(error_type, TypeInt),
+     1..|      Code = flex_msg_v1_enum:to_atom(Type, CodeInt),
+     1..|      Body = #ofp_error_msg{ type = Type, code = Code, data = Data },
+     1..|      DMsg = #ofp_header{ type = error, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_ECHO_REQUEST:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      DataLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;Data:DataLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      Body = #ofp_echo_request{ data = Data },
+     1..|      DMsg = #ofp_header{ type = echo_request, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_ECHO_REPLY:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      DataLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;Data:DataLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      Body = #ofp_echo_reply{ data = Data },
+     1..|      DMsg = #ofp_header{ type = echo_reply, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_VENDOR:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      &lt;&lt;Vendor:32, Data/bytes&gt;&gt; = BodyBin,
+     1..|      Body = #ofp_vendor_header{ vendor = Vendor, data = Data },
+     1..|      DMsg = #ofp_header{ type = vendor, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_FEATURES_REQUEST:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;_:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      DMsg = #ofp_header{ type = features_request, xid = Xid,
+        |                          body = #ofp_features_request{} },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_FEATURES_REPLY, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+        |      &lt;&lt;Dpid:64/bits, NBuffers:32, NTables:8, _Pad:24,
+     1..|        CapaBin:32/bits, ActionsBin:32/bits, PortsBin/bytes&gt;&gt; = BodyBin,
+     1..|      Capabilities = binary_to_flags(capabilities, CapaBin),
+     1..|      Actions = binary_to_flags(actions, ActionsBin),
+     1..|      Ports = decode_ports(PortsBin),
+     1..|      Body = #ofp_switch_features{ datapath_id = Dpid, n_buffers = NBuffers,
+        |                                   n_tables = NTables, capabilities = Capabilities,
+        |                                   actions = Actions, ports = Ports },
+     1..|      DMsg = #ofp_header{ type = features_reply, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_GET_CONFIG_REQUEST:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;_:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      DMsg = #ofp_header{ type = get_config_request, xid = Xid,
+        |                          body = #ofp_get_config_request{} },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_GET_CONFIG_REPLY:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      &lt;&lt;FlagsBin:2/bytes, MissSendLen:16&gt;&gt; = BodyBin,
+     1..|      Flags = binary_to_flags(config_flags, FlagsBin),
+     1..|      Body = #ofp_switch_config{ flags = Flags, miss_send_len = MissSendLen },
+     1..|      DMsg = #ofp_header{ type = get_config_reply, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_SET_CONFIG:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      &lt;&lt;FlagsBin:2/bytes, MissSendLen:16&gt;&gt; = BodyBin,
+     1..|      Flags = binary_to_flags(config_flags, FlagsBin),
+     1..|      Body = #ofp_switch_config{ flags = Flags, miss_send_len = MissSendLen },
+     1..|      DMsg = #ofp_header{ type = set_config, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_PACKET_IN:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      &lt;&lt;BufferIdInt:32, TotalLen:16, PortInt:16, ReasonInt:8, _:8, Data/bytes&gt;&gt; = BodyBin,
+     1..|      PortNo = get_id(port, PortInt),
+     1..|      Reason = get_id(packet_in_reason, ReasonInt),
+     1..|      BufferId = get_id(max_len, BufferIdInt),
+     1..|      Body = #ofp_packet_in{ buffer_id = BufferId, total_len = TotalLen,
+        |                             in_port = PortNo, reason = Reason, data = Data },
+     1..|      DMsg = #ofp_header{ type = packet_in, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_FLOW_REMOVED:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+        |      &lt;&lt;MatchBin:?OFP_MATCH_SIZE/bytes, Cookie:8/bytes, Prority:16, ReasonInt:8, _:8,
+     1..|        Dsec:32, Dnsec:32, Idle:16, _:16, Packet:64, Byte:64&gt;&gt; = BodyBin,
+     1..|      Reason = get_id(flow_removed_reason, ReasonInt),
+     1..|      Match = decode_match(MatchBin),
+     1..|      Body = #ofp_flow_removed{ match = Match, cookie = Cookie,
+        |                                priority = Prority, reason = Reason,
+        |                                duration_sec = Dsec, duration_nsec = Dnsec,
+        |                                idle_timeout = Idle, packet_count = Packet,
+        |                                byte_count = Byte },
+     1..|      DMsg = #ofp_header{ type = flow_removed, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_PORT_STATUS:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      &lt;&lt;ReasonInt:8, _:7/bytes, PhyPortBin/bytes&gt;&gt; = BodyBin,
+     1..|      PhyPort = decode_port(PhyPortBin),
+     1..|      Reason = get_id(port_reason, ReasonInt),
+     1..|      Body = #ofp_port_status{ reason = Reason, desc = PhyPort },
+     1..|      DMsg = #ofp_header{ type = port_status, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_PACKET_OUT:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+        |      &lt;&lt;BufferidInt:32, InPort:16, ActionsLen:16,
+     1..|        ActionsBin:ActionsLen/bytes, Data/bytes&gt;&gt; = BodyBin,
+     1..|      PortNo = get_id(port_no, InPort),
+     1..|      BufferId = get_id(max_len, BufferidInt),
+     1..|      Actions = decode_actions(ActionsBin),
+     1..|      Body = #ofp_packet_out{ buffer_id = BufferId, in_port = PortNo,
+        |                              actions = Actions, data = Data },
+     1..|      DMsg = #ofp_header{ type = packet_out, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_FLOW_MOD:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+        |      &lt;&lt;MatchBin:?OFP_MATCH_SIZE/bytes, Cookie:8/bytes, CommandInt:16, Idle:16,
+        |      Hard:16, Priority:16, BufferIdInt:32, OutPortInt:16, FlagsBin:16/bits,
+     1..|      ActionsBin/bytes&gt;&gt; = BodyBin,
+     1..|      Command = get_id(flow_mod_command, CommandInt),
+     1..|      Flags = binary_to_flags(flow_mod_flags, FlagsBin),
+     1..|      OutPortNo = get_id(port_no, OutPortInt),
+     1..|      BufferId = get_id(max_len, BufferIdInt),
+     1..|      Match = decode_match(MatchBin),
+     1..|      Actions = decode_actions(ActionsBin),
+     1..|      Body = #ofp_flow_mod{ match = Match, cookie = Cookie, command = Command,
+        |                            idle_timeout = Idle, hard_timeout = Hard,
+        |                            priority = Priority, buffer_id = BufferId,
+        |                            out_port = OutPortNo, flags = Flags, actions = Actions },
+     1..|      DMsg = #ofp_header{ type = flow_mod, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_PORT_MOD:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+        |      &lt;&lt;PortNoInt:16, HwAddr:?OFP_ETH_ALEN/bytes, ConfigBin:32/bits,
+     1..|        MaskBin:32/bits, AdvertiseBin:32/bits, _:4/bytes&gt;&gt; = BodyBin,
+     1..|      PortNo = get_id(port_no, PortNoInt),
+     1..|      Config = binary_to_flags(port_config, ConfigBin),
+     1..|      Mask = binary_to_flags(port_config, MaskBin),
+     1..|      Advertise = binary_to_flags(port_features, AdvertiseBin),
+     1..|      Body = #ofp_port_mod{ port_no = PortNo, hw_addr = HwAddr,
+        |                            config = Config, mask = Mask, advertised = Advertise },
+     1..|      DMsg = #ofp_header{ type = port_mod, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_BARRIER_REQUEST:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;_:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      DMsg = #ofp_header{ type = barrier_request, xid = Xid, body = #ofp_barrier_request{} },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_BARRIER_REPLY:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;_:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      DMsg = #ofp_header{ type = barrier_reply, xid = Xid, body = #ofp_barrier_reply{} },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_QUEUE_GET_CONFIG_REQUEST:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      &lt;&lt;PortNoInt:16, _:16&gt;&gt; = BodyBin,
+     1..|      PortNo = get_id(port_no, PortNoInt),
+     1..|      Body = #ofp_queue_get_config_request{ port_no = PortNo },
+     1..|      DMsg = #ofp_header{ type = queue_get_config_request, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_QUEUE_GET_CONFIG_REPLY:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     1..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     1..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     1..|      &lt;&lt;PortNoInt:16, _:48, QueuesBin/bytes&gt;&gt; = BodyBin,
+     1..|      PortNo = get_id(port_no, PortNoInt),
+     1..|      Queues = decode_packet_queues(QueuesBin),
+     1..|      Body = #ofp_queue_get_config_reply{ port_no = PortNo, queues = Queues },
+     1..|      DMsg = #ofp_header{ type = queue_get_config_reply, xid = Xid, body = Body },
+     1..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_STATS_REQUEST:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     6..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     6..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     6..|      RequestBodyLength = BodyLength - 4,
+        |      &lt;&lt;TypeInt:16, FlagsBin:2/bytes, RequestBodyBin:RequestBodyLength/bytes,
+     6..|        Rest/bytes&gt;&gt; = BodyBin,
+     6..|      Type = get_id(stats_types, TypeInt),
+     6..|      Flags = binary_to_flags(stats_request_flags, FlagsBin),
+     6..|      RequestBody = case Type of
+        |                        desc -&gt;
+     1..|                            #ofp_desc_stats_request{};
+        |                        flow -&gt;
+        |                            &lt;&lt;MatchBin:?OFP_MATCH_SIZE/bytes, TableIdInt:8,
+     1..|                              _:8, OutPortInt:16&gt;&gt; = RequestBodyBin,
+     1..|                            Match = decode_match(MatchBin),
+     1..|                            TableId = get_id(table_id, TableIdInt),
+     1..|                            OutPort = get_id(port_no, OutPortInt),
+     1..|                            #ofp_flow_stats_request{ match = Match,
+        |                                                     table_id = TableId,
+        |                                                     out_port = OutPort };
+        |                        aggregate -&gt;
+        |                            &lt;&lt;MatchBin:?OFP_MATCH_SIZE/bytes, TableIdInt:8,
+     1..|                              _:8, OutPortInt:16&gt;&gt; = RequestBodyBin,
+     1..|                            Match = decode_match(MatchBin),
+     1..|                            TableId = get_id(table_id, TableIdInt),
+     1..|                            OutPort = get_id(port_no, OutPortInt),
+     1..|                            #ofp_aggregate_stats_request{ match = Match,
+        |                                                          table_id = TableId,
+        |                                                          out_port = OutPort };
+        |                        table -&gt;
+     1..|                            #ofp_table_stats_request{};
+        |                        port -&gt;
+     1..|                            &lt;&lt;PortNoInt:16, _:6/bytes&gt;&gt; = RequestBodyBin,
+     1..|                            PortNo = get_id(port_no, PortNoInt),
+     1..|                            #ofp_port_stats_request{ port_no = PortNo };
+        |                        queue -&gt;
+<font color=red>     0..|                            &lt;&lt;PortNoInt:16, _:2/bytes, QueueIdInt:32&gt;&gt; = RequestBodyBin,</font>
+<font color=red>     0..|                            QueueId = get_id(queue_id, QueueIdInt),</font>
+<font color=red>     0..|                            PortNo = get_id(port_no, PortNoInt),</font>
+<font color=red>     0..|                            #ofp_queue_stats_request{ port_no = PortNo, queue_id = QueueId };</font>
+        |                        vendor -&gt;
+     1..|                            &lt;&lt;VendorInt:32, Data/bytes&gt;&gt; = RequestBodyBin,
+     1..|                            #ofp_vendor_stats_request{ vendor = VendorInt, data = Data }
+        |                    end,
+     6..|      Body = #ofp_stats_request{ type = Type, flags = Flags, body = RequestBody },
+     6..|      DMsg = #ofp_header{ type = stats_request, xid = Xid, body = Body },
+     6..|      { ok, DMsg, Rest };
+        |  do(&lt;&lt;?VERSION:8, ?OFPT_STATS_REPLY:8, Length:16, Xid:32, Binary2/bytes&gt;&gt;) -&gt;
+     6..|      BodyLength = Length - ?OFP_HEADER_SIZE,
+     6..|      &lt;&lt;BodyBin:BodyLength/bytes, Rest/bytes&gt;&gt; = Binary2,
+     6..|      ReplyBodyLength = BodyLength - 4,
+        |      &lt;&lt;TypeInt:16, FlagsBin:2/bytes, ReplyBodyBin:ReplyBodyLength/bytes,
+     6..|        Rest/bytes&gt;&gt; = BodyBin,
+     6..|      Type = get_id(stats_types, TypeInt),
+     6..|      Flags = binary_to_flags(stats_reply_flags, FlagsBin),
+     6..|      ReplyBody = case Type of
+        |                        desc -&gt;
+        |                          &lt;&lt;MFR:?DESC_STR_LEN/bytes, HW:?DESC_STR_LEN/bytes,
+        |                            SW:?DESC_STR_LEN/bytes, SN:?SERIAL_NUM_LEN/bytes,
+     1..|                            DP:?DESC_STR_LEN/bytes&gt;&gt; = ReplyBodyBin,
+     1..|                          #ofp_desc_stats{ mfr_desc = flex_msg_v1_utils:strip_string(MFR),
+        |                                           hw_desc = flex_msg_v1_utils:strip_string(HW),
+        |                                           sw_desc = flex_msg_v1_utils:strip_string(SW),
+        |                                           serial_num = flex_msg_v1_utils:strip_string(SN),
+        |                                           dp_desc = flex_msg_v1_utils:strip_string(DP) };
+        |                        flow -&gt;
+     1..|                          decode_flow_stats_list(ReplyBodyBin);
+        |                        aggregate -&gt;
+     1..|                          &lt;&lt;Packet:64, Byte:64, Flow:32, _:4/bytes&gt;&gt; = ReplyBodyBin,
+     1..|                          #ofp_aggregate_stats{ packet_count = Packet,
+        |                                                byte_count = Byte,
+        |                                                flow_count = Flow };
+        |                        table -&gt;
+     1..|                          decode_table_stats_list(ReplyBodyBin);
+        |                        port -&gt;
+     1..|                          decode_port_stats_list(ReplyBodyBin);
+        |                        queue -&gt;
+<font color=red>     0..|                          decode_queue_stats_list(ReplyBodyBin);</font>
+        |                        vendor -&gt;
+     1..|                          &lt;&lt;Vendor:32, Data/bytes&gt;&gt; = ReplyBodyBin,
+     1..|                          #ofp_vendor_stats{ vendor = Vendor,
+        |                                             data = Data }
+        |                  end,
+     6..|      Body = #ofp_stats_reply{ type = Type, flags = Flags, body = ReplyBody },
+     6..|      DMsg = #ofp_header{ type = stats_reply, xid = Xid, body = Body },
+     6..|      { ok, DMsg, Rest }.
+        |  
+        |  %%------------------------------------------------------------------------------
+        |  %% Internal functions
+        |  %%------------------------------------------------------------------------------
+        |  
+     1..|  decode_table_stats_list(Binary) -&gt; decode_table_stats_list(Binary, []).
+        |  
+     1..|  decode_table_stats_list(&lt;&lt;&gt;&gt;, List) -&gt; lists:reverse(List);
+        |  decode_table_stats_list(&lt;&lt;StatsBin:?OFP_TABLE_STATS_SIZE/bytes, Rest/bytes&gt;&gt;, List) -&gt;
+     1..|      Stats = decode_table_stats(StatsBin),
+     1..|      decode_table_stats_list(Rest, [Stats | List]).
+        |  
+        |  decode_table_stats(&lt;&lt;TableId:8, _:3/bytes, Name:?OFP_MAX_TABLE_NAME_LEN/bytes,
+        |                       Wildcards:32, Max:32, Active:32, LookUp:64, Matched:64&gt;&gt;) -&gt;
+     1..|      #ofp_table_stats{ table_id = get_id(table_id, TableId),
+        |                        name = flex_msg_v1_utils:strip_string(Name),
+        |                        wildcards = Wildcards, max_entries = Max,
+        |                        active_count = Active, lookup_count = LookUp,
+        |                        matched_count = Matched }.
+        |  
+<font color=red>     0..|  decode_queue_stats_list(Binary) -&gt; decode_queue_stats_list(Binary, []).</font>
+        |  
+<font color=red>     0..|  decode_queue_stats_list(&lt;&lt;&gt;&gt;, List) -&gt; lists:reverse(List);</font>
+        |  decode_queue_stats_list(&lt;&lt;StatsBin:?OFP_QUEUE_STATS_SIZE/bytes, Rest/bytes&gt;&gt;, List) -&gt;
+<font color=red>     0..|      Stats = decode_queue_stats(StatsBin),</font>
+<font color=red>     0..|      decode_queue_stats_list(Rest, [Stats | List]).</font>
+        |  
+        |  decode_queue_stats(&lt;&lt;PortNoInt:16, _:2/bytes, QueueId:32,
+        |                       TxBytes:64, TxPackets:64, TxErrors:64&gt;&gt;) -&gt;
+<font color=red>     0..|      PortNo = get_id(port_no, PortNoInt),</font>
+<font color=red>     0..|      #ofp_queue_stats{ port_no = PortNo,</font>
+        |                        queue_id = QueueId,
+        |                        tx_bytes = TxBytes,
+        |                        tx_packets = TxPackets,
+        |                        tx_errors = TxErrors }.
+        |  
+     1..|  decode_port_stats_list(Binary) -&gt; decode_port_stats_list(Binary, []).
+        |  
+     1..|  decode_port_stats_list(&lt;&lt;&gt;&gt;, List) -&gt; lists:reverse(List);
+        |  decode_port_stats_list(&lt;&lt;StatsBin:?OFP_PORT_STATS_SIZE/bytes, Rest/bytes&gt;&gt;, List) -&gt;
+     3..|      Stats = decode_port_stats(StatsBin),
+     3..|      decode_port_stats_list(Rest, [Stats | List]).
+        |  
+        |  decode_port_stats(&lt;&lt;PortNoInt:16, _:6/bytes, RxPackets:64, TxPackets:64,
+        |                      RxBytes:64, TxBytes:64, RxDropped:64, TxDropped:64,
+        |                      RxErrors:64, TxErrors:64, RxFrameErr:64, RxOverErr:64,
+        |                      RxCrcErr:64, Collisions:64&gt;&gt;) -&gt;
+     3..|      PortNo = get_id(port_no, PortNoInt),
+     3..|      #ofp_port_stats{ port_no = PortNo, rx_packets = RxPackets,
+        |                       tx_packets = TxPackets, rx_bytes = RxBytes,
+        |                       tx_bytes = TxBytes, rx_dropped = RxDropped,
+        |                       tx_dropped = TxDropped, rx_errors = RxErrors,
+        |                       tx_errors = TxErrors, rx_frame_err = RxFrameErr,
+        |                       rx_over_err = RxOverErr, rx_crc_err = RxCrcErr,
+        |                       collisions = Collisions }.
+        |  
+     1..|  decode_flow_stats_list(Binary) -&gt; decode_flow_stats_list(Binary, []).
+        |  
+     1..|  decode_flow_stats_list(&lt;&lt;&gt;&gt;, List) -&gt; lists:reverse(List);
+        |  decode_flow_stats_list(&lt;&lt;Length:16, _/bytes&gt;&gt; = Binary, List) -&gt;
+     2..|      &lt;&lt;StatsBin:Length/bytes, Rest/bytes&gt;&gt; = Binary,
+     2..|      Stats = decode_flow_stats(StatsBin),
+     2..|      decode_flow_stats_list(Rest, [Stats | List]).
+        |  
+        |  decode_flow_stats(&lt;&lt;_Len:16, TableIdInt:8, _:8, MatchBin:?OFP_MATCH_SIZE/bytes,
+        |                      DSec:32, DNSec:32, Priority:16, Idle:16, Hard:16,
+        |                      _:6/bytes, Cookie:8/bytes, Packet:64, Byte:64,
+        |                      ActionsBin/bytes&gt;&gt;) -&gt;
+     2..|      Actions = decode_actions(ActionsBin),
+     2..|      Match = decode_match(MatchBin),
+     2..|      TableId = get_id(table_id, TableIdInt),
+     2..|      #ofp_flow_stats{ table_id = TableId, match = Match,
+        |                       duration_sec = DSec, duration_nsec = DNSec,
+        |                       priority = Priority, idle_timeout = Idle,
+        |                       hard_timeout = Hard, cookie = Cookie,
+        |                       packet_count = Packet, byte_count = Byte,
+        |                       actions = Actions }.
+        |  
+     4..|  decode_actions(Binary) -&gt; decode_actions(Binary, []).
+        |  
+     4..|  decode_actions(&lt;&lt;&gt;&gt;, Actions) -&gt; lists:reverse(Actions);
+        |  decode_actions(&lt;&lt;TypeInt:16, Length:16, _/bytes&gt;&gt; = Binary, Actions) -&gt;
+     7..|      &lt;&lt;ActionBin:Length/bytes, Rest/bytes&gt;&gt; = Binary,
+     7..|      ActionBody = decode_action(ActionBin),
+     7..|      Actiontype = get_id(actions, TypeInt),
+     7..|      Action = #ofp_action_header{ type = Actiontype, body = ActionBody },
+     7..|      decode_actions(Rest, [Action | Actions]).
+        |  
+        |  decode_action(&lt;&lt;?OFPAT_OUTPUT:16, 8:16, PortInt:16, MaxLen:16&gt;&gt;) -&gt;
+     7..|      Port = get_id(port_no, PortInt),
+     7..|      #ofp_action_output{ port = Port, max_len = MaxLen };
+        |  decode_action(&lt;&lt;?OFPAT_SET_VLAN_VID:16, 8:16, VlanVID:16, _:16&gt;&gt;) -&gt;
+<font color=red>     0..|      #ofp_action_vlan_vid{ vlan_vid = VlanVID };</font>
+        |  decode_action(&lt;&lt;?OFPAT_SET_VLAN_PCP:16, 8:16, VlanPcp:8, _:24&gt;&gt;) -&gt;
+<font color=red>     0..|      #ofp_action_vlan_pcp{ vlan_pcp = VlanPcp };</font>
+        |  decode_action(&lt;&lt;?OFPAT_STRIP_VLAN:16, 8:16, _:4/bytes&gt;&gt;) -&gt;
+<font color=red>     0..|      #ofp_action_strip_vlan{};</font>
+        |  decode_action(&lt;&lt;?OFPAT_SET_DL_SRC:16, 16:16, DlAddr:48/bits, _:48&gt;&gt;) -&gt;
+<font color=red>     0..|      #ofp_action_dl_addr{ dl_addr = DlAddr };</font>
+        |  decode_action(&lt;&lt;?OFPAT_SET_DL_DST:16, 16:16, DlAddr:48/bits, _:48&gt;&gt;) -&gt;
+<font color=red>     0..|      #ofp_action_dl_addr{ dl_addr = DlAddr };</font>
+        |  decode_action(&lt;&lt;?OFPAT_SET_NW_SRC:16, 8:16, NwAddr:32/bits&gt;&gt;) -&gt;
+<font color=red>     0..|      #ofp_action_nw_addr{ nw_addr = NwAddr };</font>
+        |  decode_action(&lt;&lt;?OFPAT_SET_NW_DST:16, 8:16, NwAddr:32/bits&gt;&gt;) -&gt;
+<font color=red>     0..|      #ofp_action_nw_addr{ nw_addr = NwAddr };</font>
+        |  decode_action(&lt;&lt;?OFPAT_SET_NW_TOS:16, 8:16, NwTos:8, _:24/bits&gt;&gt;) -&gt;
+<font color=red>     0..|      #ofp_action_nw_tos{ nw_tos = NwTos };</font>
+        |  decode_action(&lt;&lt;?OFPAT_SET_TP_SRC:16, 8:16, TpPort:16, _:16/bits&gt;&gt;) -&gt;
+<font color=red>     0..|      #ofp_action_tp_port{ tp_port = TpPort };</font>
+        |  decode_action(&lt;&lt;?OFPAT_SET_TP_DST:16, 8:16, TpPort:16, _:16/bits&gt;&gt;) -&gt;
+<font color=red>     0..|      #ofp_action_tp_port{ tp_port = TpPort };</font>
+        |  decode_action(&lt;&lt;?OFPAT_ENQUEUE:16, 16:16, PortInt:16, _:48/bits, QueueID:32&gt;&gt;) -&gt;
+<font color=red>     0..|      Port = get_id(port_no, PortInt),</font>
+<font color=red>     0..|      #ofp_action_enqueue{ port = Port, queue_id = QueueID };</font>
+        |  decode_action(&lt;&lt;?OFPAT_VENDOR:16, _Length:16, Vendor/bytes&gt;&gt;) -&gt;
+<font color=red>     0..|      #ofp_action_vendor{ vendor = Vendor }.</font>
+        |  
+        |  decode_match(Binary) -&gt;
+        |      &lt;&lt;Wildcards:32/integer, InPort:16/integer,
+        |        DlSrc:6/binary, DlDst:6/binary, DlVlan:16/integer, DlVlanPcp:8/integer,
+        |        _Pad1:1/bytes, DlType:16/integer, NwTos:8/integer, NwProto:8/integer, _Pad2:2/bytes,
+     6..|        NwSrc:4/bytes, NwDst:4/bytes, TpSrc:16/integer, TpDst:16/integer&gt;&gt; = Binary,
+     6..|      NwSrcMask = get_match_nw_masklen(Wildcards, nw_src),
+     6..|      NwDstMask = get_match_nw_masklen(Wildcards, nw_dst),
+     6..|      #ofp_match{ wildcards = Wildcards, in_port = InPort,
+        |                  dl_src = DlSrc, dl_dst = DlDst,
+        |                  dl_vlan = DlVlan, dl_vlan_pcp = DlVlanPcp,
+        |                  dl_type = DlType, nw_tos = NwTos,
+        |                  nw_proto = NwProto, nw_src = NwSrc, nw_src_mask = NwSrcMask,
+        |                  nw_dst = NwDst, nw_dst_mask = NwDstMask, tp_src = TpSrc,
+        |                  tp_dst = TpDst }.
+        |  
+        |  get_match_nw_masklen(Wildcards, Which) -&gt;
+    12..|      MaskLen = case Which of
+        |                    nw_src -&gt;
+     6..|                        (Wildcards band ?OFPFW_NW_SRC_MASK) bsr ?OFPFW_NW_SRC_SHIFT;
+        |                    nw_dst -&gt;
+     6..|                        (Wildcards band ?OFPFW_NW_DST_MASK) bsr ?OFPFW_NW_DST_SHIFT
+        |                end,
+    12..|      case MaskLen &gt; 32 of
+     4..|          true  -&gt; 0;
+     8..|          false -&gt; 32 - MaskLen
+        |      end.
+        |  
+     1..|  decode_packet_queues(Binary) -&gt; decode_packet_queues(Binary, []).
+        |  
+     1..|  decode_packet_queues(&lt;&lt;&gt;&gt;, Queues) -&gt; lists:reverse(Queues);
+        |  decode_packet_queues(&lt;&lt;_QueueId:32, Length:16, _/bytes&gt;&gt; = Binary, Queues) -&gt;
+     2..|      &lt;&lt;PacketQueueBin:Length/bytes, Rest/bytes&gt;&gt; = Binary,
+     2..|      Queue = decode_packet_queue(PacketQueueBin),
+     2..|      decode_packet_queues(Rest, [Queue | Queues]).
+        |  
+        |  decode_packet_queue(&lt;&lt;QueueId:32, _Length:16, _:16, PropsBin/bytes&gt;&gt;) -&gt;
+     2..|      Props = decode_queue_properties(PropsBin),
+     2..|      #ofp_packet_queue{ queue_id = QueueId, properties = Props }.
+        |  
+     2..|  decode_queue_properties(Binary) -&gt; decode_queue_properties(Binary, []).
+        |  
+     2..|  decode_queue_properties(&lt;&lt;&gt;&gt;, Props) -&gt; lists:reverse(Props);
+        |  decode_queue_properties(&lt;&lt;_Prop:16, Length:16, _/bytes&gt;&gt; = Binary, Props) -&gt;
+     3..|      &lt;&lt;PropBin:Length/bytes, Rest/bytes&gt;&gt; = Binary,
+     3..|      Prop = decode_queue_property(PropBin),
+     3..|      decode_queue_properties(Rest, [Prop | Props]).
+        |  
+        |  decode_queue_property(&lt;&lt;?OFPQT_NONE:16, _Len:16, _:4/bytes&gt;&gt;) -&gt;
+<font color=red>     0..|      #ofp_queue_prop_header{};</font>
+        |  decode_queue_property(&lt;&lt;?OFPQT_MIN_RATE:16, _Len:16, _:4/bytes, Rate:16, _:6/bytes&gt;&gt;) -&gt;
+     3..|      #ofp_queue_prop_min_rate{ rate = Rate }.
+        |  
+     1..|  decode_ports(Binary) -&gt; decode_ports(Binary, []).
+        |  
+     1..|  decode_ports(&lt;&lt;&gt;&gt;, Ports)   -&gt; lists:reverse(Ports);
+        |  decode_ports(Binary, Ports) -&gt;
+     3..|      &lt;&lt;PortBin:?OFP_PHY_PORT_SIZE/bytes, Rest/bytes&gt;&gt; = Binary,
+     3..|      Port = decode_port(PortBin),
+     3..|      decode_ports(Rest, [Port | Ports]).
+        |  
+        |  decode_port(&lt;&lt;PortInt:16, HwAddr:?OFP_ETH_ALEN/bytes, NameBin:?OFP_MAX_PORT_NAME_LEN/bytes,
+        |                ConfigBin:32/bits, StateBin:32/bits, CurrBin:32/bits,
+        |                AdvertizedBin:32/bits, SupportedBin:32/bits, PeerBin:32/bits&gt;&gt;) -&gt;
+     4..|      PortNo = get_id(port_no, PortInt),
+     4..|      Name = flex_msg_v1_utils:strip_string(NameBin),
+     4..|      Config = binary_to_flags(port_config, ConfigBin),
+     4..|      State = binary_to_flags(port_state, StateBin),
+     4..|      Curr = binary_to_flags(port_features, CurrBin),
+     4..|      Advertized = binary_to_flags(port_features, AdvertizedBin),
+     4..|      Supported = binary_to_flags(port_features, SupportedBin),
+     4..|      Peer = binary_to_flags(port_features, PeerBin),
+     4..|      #ofp_phy_port{ port_no = PortNo, hw_addr = HwAddr, name = Name,
+        |                     config = Config, state = State, curr = Curr,
+        |                     advertised = Advertized, supported = Supported, peer = Peer }.
+        |  
+        |  binary_to_flags(Type, Binary) -&gt;
+    44..|      flex_msg_v1_utils:binary_to_flags(flex_msg_v1_enum, Type, Binary).
+        |  
+        |  get_id(Enum, Value) -&gt;
+    54..|      flex_msg_v1_utils:get_enum_name(flex_msg_v1_enum, Enum, Value).
+</pre>
+</body>
+</html>
