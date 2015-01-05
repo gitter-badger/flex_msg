@@ -3,5 +3,4 @@
   {vsn, "1.0"},
   {applications,
    [kernel,
-    stdlib,
-    flex_msg_v1]}]}.
+    stdlib]}]}.
