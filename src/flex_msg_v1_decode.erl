@@ -392,8 +392,8 @@ decode_action(<<?OFPAT_SET_TP_DST:16, 8:16, TpPort:16, _:16/bits>>) ->
 decode_action(<<?OFPAT_ENQUEUE:16, 16:16, PortInt:16, _:48/bits, QueueID:32>>) ->
     Port = get_id(port_no, PortInt),
     #ofp_action_enqueue{ port = Port, queue_id = QueueID };
-decode_action(<<?OFPAT_VENDOR:16, _Length:16, Vendor/bytes>>) ->
-    #ofp_action_vendor{ vendor = Vendor }.
+decode_action(<<?OFPAT_VENDOR:16, _Length:16, Vendor:32, Data/bytes>>) ->
+    #ofp_action_vendor{ vendor = Vendor, data = Data }.
 
 decode_match(Binary) ->
     <<Wildcards:32/integer, InPort:16/integer,

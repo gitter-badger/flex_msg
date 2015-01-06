@@ -318,6 +318,6 @@ create_action({ set_transport_dst_port, TpPort }) ->
 create_action({ enqueue, Port, QueueID }) ->
     Body = #ofp_action_enqueue{ port = Port, queue_id = QueueID },
     #ofp_action_header{ type = enqueue, body = Body };
-create_action({ vendor_action, Vendor }) ->
-    Body = #ofp_action_vendor{ vendor = Vendor },
+create_action({ vendor_action, Vendor, Data }) ->
+    Body = #ofp_action_vendor{ vendor = Vendor, data = Data },
     #ofp_action_header{ type = vendor, body = Body }.

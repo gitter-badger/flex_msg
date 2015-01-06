@@ -405,9 +405,10 @@ encode_action(#ofp_action_header{ body = #ofp_action_vendor{} } = Action) ->
     Type = Action#ofp_action_header.type,
     Body = Action#ofp_action_header.body,
     Vendor = Body#ofp_action_vendor.vendor,
-    Vendorlength = byte_size(Vendor) + 4,
+    Data = Body#ofp_action_vendor.data,
+    Vendorlength = byte_size(Data) + 8,
     ActionType = get_id(actions, Type),
-    <<ActionType:16, Vendorlength:16, Vendor/bytes>>.
+    <<ActionType:16, Vendorlength:16, Vendor:32, Data/bytes>>.
 
 encode_ports(Ports) -> encode_ports(Ports, <<>>).
 

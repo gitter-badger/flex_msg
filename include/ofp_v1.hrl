@@ -232,7 +232,8 @@
 -type ofp_action_tp_port() :: #ofp_action_tp_port{}.
 
 -record(ofp_action_vendor, {
-          vendor }).
+          vendor :: integer(),
+          data = <<>> :: binary() }).
 -type ofp_action_vendor() :: #ofp_action_vendor{}.
 
 -record(ofp_action_header, {
