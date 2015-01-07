@@ -3,6 +3,7 @@
 -export([do/1]).
 
 -include("ofp_v1.hrl").
+-include("ofp_nx.hrl").
 
 %%------------------------------------------------------------------------------
 %% API functions
@@ -44,7 +45,13 @@ do(<<?VERSION:8, ?OFPT_VENDOR:8, Length:16, Xid:32, Binary2/bytes>>) ->
     BodyLength = Length - ?OFP_HEADER_SIZE,
     <<BodyBin:BodyLength/bytes, Rest/bytes>> = Binary2,
     <<Vendor:32, Data/bytes>> = BodyBin,
-    Body = #ofp_vendor_header{ vendor = Vendor, data = Data },
+    Body = case Vendor of
+               ?NX_VENDOR_ID ->
+                   #ofp_vendor_header{ vendor = nicira,
+                                       data = flex_msg_nx_decode:do(Data) };
+               _ ->
+                   #ofp_vendor_header{ vendor = Vendor, data = Data }
+           end,
     DMsg = #ofp_header{ type = vendor, xid = Xid, body = Body },
     { ok, DMsg, Rest };
 do(<<?VERSION:8, ?OFPT_FEATURES_REQUEST:8, Length:16, Xid:32, Binary2/bytes>>) ->

@@ -13,5 +13,6 @@
 *.o
 *.eqc
 *.plt
+.rebar/
 erl_crash.dump
 *~
