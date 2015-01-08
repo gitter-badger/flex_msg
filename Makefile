@@ -33,5 +33,5 @@ setup_dialyzer:
 	dialyzer --build_plt --apps erts kernel stdlib mnesia compiler syntax_tools runtime_tools crypto tools inets ssl webtool public_key observer
 	dialyzer --add_to_plt deps/*/ebin
 
-dialyzer: $(DEPS_PLT)
+dialyze: $(DEPS_PLT)
 	dialyzer --fullpath --plt $(DEPS_PLT) -Wrace_conditions -r ./apps/*/ebin

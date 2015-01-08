@@ -176,3 +176,7 @@
                    { all, 16#ff }] }).
 
 -enum({ queue_id, [{ all, 16#ffffffff }] }).
+
+%% Nicira Extensions
+
+-enum({ nx_learn_flags, [ send_flow_rem, delete_learned ] }).

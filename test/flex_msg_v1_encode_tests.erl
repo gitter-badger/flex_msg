@@ -377,6 +377,61 @@ nx_set_packet_in_format_encode_test() ->
     io:format("EMsg: ~w~n", [EMsg]),
     ?assertEqual(Packet, EMsg).
 
+nx_flow_mod_add_encode_test() ->
+    FMS1 = #learn_match_field{ 
+              src = #nxm_field_header{ vendor = nxm0, 
+                                       field = vlan_tci,
+                                       has_mask = false },
+              dst = #nxm_field_header{ vendor = nxm0,
+                                       field = vlan_tci,
+                                       has_mask = false }},
+    FMS2 = #learn_match_field{
+              src = #nxm_field_header{ vendor = nxm0,
+                                       field = eth_src,
+                                       has_mask = false },
+              dst = #nxm_field_header{ vendor = nxm0,
+                                       field = eth_dst,
+                                       has_mask = false}},
+    FMS3 = #learn_output_action{
+              port = #nxm_field_header{ vendor = nxm0,
+                                        field = in_port,
+                                        has_mask = false }},
+    Learn = #ofp_action_header{
+               type = vendor,
+               body = #ofp_action_vendor{
+                         vendor = nicira,
+                         data = #nx_action_learn{
+                                   idle_timeout = 0,
+                                   hard_timeout = 10,
+                                   priority = 32768,
+                                   cookie = <<0:64>>,
+                                   flags = [],
+                                   table_id = 1, 
+                                   fin_idle_timeout = 0,
+                                   fin_hard_timeout = 0,
+                                   flow_mod_spec = [FMS1, FMS2, FMS3]}}},
+    Resubmit = #ofp_action_header{
+                  type = vendor,
+                  body = #ofp_action_vendor{
+                            vendor = nicira,
+                            data = #nx_action_resubmit{
+                                      subtype = resubmit_table,
+                                      in_port = in_port,
+                                      table_id = 1 }}},
+    FlowMod = #nx_flow_mod{
+                 command = add, 
+                 priority = 32768,
+                 actions = [Learn, Resubmit] },
+    NXData = #nicira_header{ sub_type = flow_mod,
+                             body = FlowMod },
+    Body = #ofp_vendor_header{ vendor = nicira,
+                               data = NXData },
+    Msg = #ofp_header{ type = vendor, xid = 13, body = Body },
+    EMsg = ?MODNAME:encode(Msg),
+    Packet = packet(nx_flow_mod_add),
+    io:format("EMsg: ~w~n", [EMsg]),
+    io:format("Packet: ~w~n", [Packet]),
+    ?assertEqual(Packet, EMsg).
 
 %%------------------------------------------------------------------------------
 %% Packets
@@ -588,5 +643,23 @@ packet(Type) ->
               16#00, 16#00, 16#00, 16#06,
               16#00, 16#00, 16#23, 16#20,
               16#00, 16#00, 16#00, 16#10,
-              16#00, 16#00, 16#00, 16#01>>
+              16#00, 16#00, 16#00, 16#01>>;
+        nx_flow_mod_add ->
+            <<16#01, 16#04, 16#00, 16#88, 16#00, 16#00, 16#00, 16#0d,
+              16#00, 16#00, 16#23, 16#20, 16#00, 16#00, 16#00, 16#0d,
+              16#00, 16#00, 16#00, 16#00, 16#00, 16#00, 16#00, 16#00,
+              16#00, 16#00, 16#00, 16#00, 16#00, 16#00, 16#80, 16#00,
+              16#ff, 16#ff, 16#ff, 16#ff, 16#ff, 16#ff, 16#00, 16#00,
+              16#00, 16#00, 16#00, 16#00, 16#00, 16#00, 16#00, 16#00,
+              16#ff, 16#ff, 16#00, 16#48, 16#00, 16#00, 16#23, 16#20,
+              16#00, 16#10, 16#00, 16#00, 16#00, 16#0a, 16#80, 16#00,
+              16#00, 16#00, 16#00, 16#00, 16#00, 16#00, 16#00, 16#00,
+              16#00, 16#00, 16#01, 16#00, 16#00, 16#00, 16#00, 16#00,
+              16#00, 16#0c, 16#00, 16#00, 16#08, 16#02, 16#00, 16#00,
+              16#00, 16#00, 16#08, 16#02, 16#00, 16#00, 16#00, 16#30,
+              16#00, 16#00, 16#04, 16#06, 16#00, 16#00, 16#00, 16#00,
+              16#02, 16#06, 16#00, 16#00, 16#10, 16#10, 16#00, 16#00,
+              16#00, 16#02, 16#00, 16#00, 16#00, 16#00, 16#00, 16#00,
+              16#ff, 16#ff, 16#00, 16#10, 16#00, 16#00, 16#23, 16#20,
+              16#00, 16#0e, 16#ff, 16#f8, 16#01, 16#00, 16#00, 16#00>>
     end.
