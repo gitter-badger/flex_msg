@@ -2,6 +2,7 @@
 
 -include_lib("eunit/include/eunit.hrl").
 -include("ofp_v1.hrl").
+-include("ofp_nx.hrl").
 
 -define(MODNAME, flex_msg_v1).
 
@@ -354,6 +355,18 @@ vendor_stats_reply_encode_test() ->
     Packet = packet(vendor_stats_reply),
     ?assertEqual(Packet, EMsg).
 
+nx_flow_mod_table_id_encode_test() ->
+    NXData = #nicira_header{ sub_type = flow_mod_table_id,
+                             body = #nx_flow_mod_table_id{ set = true }},
+    Body = #ofp_vendor_header{ vendor = nicira,
+                               data = NXData },
+    Msg = #ofp_header{ type = vendor, xid = 7, body = Body },
+    EMsg = ?MODNAME:encode(Msg),
+    Packet = packet(nx_flow_mod_table_id),
+    io:format("EMsg: ~w~n", [EMsg]),
+    ?assertEqual(Packet, EMsg).
+
+
 %%------------------------------------------------------------------------------
 %% Packets
 %%------------------------------------------------------------------------------
@@ -547,5 +560,14 @@ packet(Type) ->
         vendor_stats_reply ->
             <<16#01, 16#11, 16#00, 16#18, 16#00, 16#00, 16#00, 16#05, 16#ff,
               16#ff, 16#00, 16#00, 16#00, 16#00, 16#23, 16#20, 16#00, 16#00,
-              16#00, 16#00, 16#00, 16#00, 16#00, 16#00>>
+              16#00, 16#00, 16#00, 16#00, 16#00, 16#00>>;
+        nx_flow_mod_table_id ->
+            <<16#01,
+              16#04,
+              16#00, 16#18,
+              16#00, 16#00, 16#00, 16#07,
+              16#00, 16#00, 16#23, 16#20,
+              16#00, 16#00, 16#00, 16#0f,
+              16#01,
+              16#00, 16#00, 16#00, 16#00, 16#00, 16#00, 16#00>>
     end.

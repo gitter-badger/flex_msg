@@ -3,6 +3,7 @@
 -export([do/1]).
 
 -include("ofp_v1.hrl").
+-include("ofp_nx.hrl").
 
 %%------------------------------------------------------------------------------
 %% API functions
@@ -27,6 +28,12 @@ do(#ofp_header{ type = echo_reply, xid = Xid,
                 body = #ofp_echo_reply{ data = Data } }) ->
     Length = ?OFP_ECHO_REPLY_SIZE + byte_size(Data),
     <<?VERSION:8, ?OFPT_ECHO_REPLY:8, Length:16, Xid:32, Data/bytes>>;
+do(#ofp_header{ type = vendor, xid = Xid,
+                body = #ofp_vendor_header{ vendor = nicira, data = Nx } }) ->
+    Data = flex_msg_nx_encode:do(Nx),
+    Length = ?OFP_VENDOR_HEADER_SIZE + byte_size(Data),
+    Body = <<?NX_VENDOR_ID:32, Data/bytes>>,
+    <<?VERSION:8, ?OFPT_VENDOR:8, Length:16, Xid:32, Body/bytes>>;
 do(#ofp_header{ type = vendor, xid = Xid,
                 body = #ofp_vendor_header{ vendor = Vendor, data = Data } }) ->
     Length = ?OFP_VENDOR_HEADER_SIZE + byte_size(Data),
