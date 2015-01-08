@@ -366,6 +366,17 @@ nx_flow_mod_table_id_encode_test() ->
     io:format("EMsg: ~w~n", [EMsg]),
     ?assertEqual(Packet, EMsg).
 
+nx_set_packet_in_format_encode_test() ->
+    NXData = #nicira_header{ sub_type = set_packet_in_format,
+                             body = #nx_set_packet_in_format{ format = nxm }},
+    Body = #ofp_vendor_header{ vendor = nicira,
+                               data = NXData },
+    Msg = #ofp_header{ type = vendor, xid = 6, body = Body },
+    EMsg = ?MODNAME:encode(Msg),
+    Packet = packet(nx_set_packet_in_format),
+    io:format("EMsg: ~w~n", [EMsg]),
+    ?assertEqual(Packet, EMsg).
+
 
 %%------------------------------------------------------------------------------
 %% Packets
@@ -569,5 +580,13 @@ packet(Type) ->
               16#00, 16#00, 16#23, 16#20,
               16#00, 16#00, 16#00, 16#0f,
               16#01,
-              16#00, 16#00, 16#00, 16#00, 16#00, 16#00, 16#00>>
+              16#00, 16#00, 16#00, 16#00, 16#00, 16#00, 16#00>>;
+        nx_set_packet_in_format ->
+            <<16#01,
+              16#04,
+              16#00, 16#14,
+              16#00, 16#00, 16#00, 16#06,
+              16#00, 16#00, 16#23, 16#20,
+              16#00, 16#00, 16#00, 16#10,
+              16#00, 16#00, 16#00, 16#01>>
     end.
