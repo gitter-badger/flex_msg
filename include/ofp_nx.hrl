@@ -52,6 +52,16 @@
 %%% Packet-In Message
 %%%-----------------------------------------------------------------------------
 
+-define(NXPIF_OPENFLOW10, 0).
+-define(NXPIF_NXM, 1).
+
+-type nx_packet_in_format() :: openflow10
+                             | nxm.
+
+-record(nx_set_packet_in_format, {
+          format :: atom() }).
+-type nx_set_packet_in_format() :: #nx_set_packet_in_format{}.
+
 %%%-----------------------------------------------------------------------------
 %%% Role Message
 %%%-----------------------------------------------------------------------------
