@@ -204,6 +204,7 @@
 -record(nx_flow_mod, {
           cookie = <<0:64>> :: binary(),
           command :: atom(),
+          table_id = 0 :: integer(),
           idle_timeout = 0 :: integer(),
           hard_timeout = 0 :: integer(),
           priority = 65535 :: integer(),

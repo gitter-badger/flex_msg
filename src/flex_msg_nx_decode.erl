@@ -22,7 +22,7 @@ do(<<?NXT_SET_PACKET_IN_FORMAT:32, FormatInt:32>>) ->
              end,
     #nicira_header{ sub_type = set_packet_in_format,
                     body = #nx_set_packet_in_format{ format = Format }};
-do(<<?NXT_FLOW_MOD:32, Cookie:8/bytes, CommandInt:16, Idle:16,
+do(<<?NXT_FLOW_MOD:32, Cookie:8/bytes, TableId:8, CommandInt:8, Idle:16,
      Hard:16, Priority:16, BufferIdInt:32, OutPortInt:16,
      FlagsBin:2/bytes, MatchLen:16, _:48, Data/bytes>>) ->
     PadLen = pad_length(8, MatchLen),
@@ -34,6 +34,7 @@ do(<<?NXT_FLOW_MOD:32, Cookie:8/bytes, CommandInt:16, Idle:16,
     Match = decode_matches(MatchBin),
     Actions = flex_msg_v1_decode:decode_actions(ActionsBin),
     FlowMod = #nx_flow_mod{ cookie = Cookie,
+                            table_id = TableId,
                             command = Command,
                             idle_timeout = Idle,
                             hard_timeout = Hard,

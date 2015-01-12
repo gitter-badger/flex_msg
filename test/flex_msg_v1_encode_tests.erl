@@ -378,8 +378,8 @@ nx_set_packet_in_format_encode_test() ->
     ?assertEqual(Packet, EMsg).
 
 nx_flow_mod_add_encode_test() ->
-    FMS1 = #learn_match_field{ 
-              src = #nxm_field_header{ vendor = nxm0, 
+    FMS1 = #learn_match_field{
+              src = #nxm_field_header{ vendor = nxm0,
                                        field = vlan_tci,
                                        has_mask = false },
               dst = #nxm_field_header{ vendor = nxm0,
@@ -406,7 +406,7 @@ nx_flow_mod_add_encode_test() ->
                                    priority = 32768,
                                    cookie = <<0:64>>,
                                    flags = [],
-                                   table_id = 1, 
+                                   table_id = 1,
                                    fin_idle_timeout = 0,
                                    fin_hard_timeout = 0,
                                    flow_mod_spec = [FMS1, FMS2, FMS3]}}},
@@ -419,7 +419,8 @@ nx_flow_mod_add_encode_test() ->
                                       in_port = in_port,
                                       table_id = 1 }}},
     FlowMod = #nx_flow_mod{
-                 command = add, 
+                 command = add,
+                 table_id = 0,
                  priority = 32768,
                  actions = [Learn, Resubmit] },
     NXData = #nicira_header{ sub_type = flow_mod,

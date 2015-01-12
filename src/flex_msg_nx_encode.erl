@@ -23,12 +23,12 @@ do(#nicira_header{ sub_type = set_packet_in_format,
                 end,
     <<?NXT_SET_PACKET_IN_FORMAT:32, FormatInt:32>>;
 do(#nicira_header{ sub_type = flow_mod,
-                   body = #nx_flow_mod{ cookie = Cookie,
+                   body = #nx_flow_mod{ cookie = Cookie, table_id = TableId,
                                         command = Command, idle_timeout = Idle,
-                                        hard_timeout = Hard, priority = Priority, 
-                                        out_port = OutPort, flags = Flags, 
-                                        buffer_id = BufferId, match = Match, 
-                                        actions = Actions }}) -> 
+                                        hard_timeout = Hard, priority = Priority,
+                                        out_port = OutPort, flags = Flags,
+                                        buffer_id = BufferId, match = Match,
+                                        actions = Actions }}) ->
     CommandInt = get_id(flow_mod_command, Command),
     FlagsBin = flags_to_binary(flow_mod_flags, Flags, 2),
     OutPortInt = get_id(port_no, OutPort),
@@ -36,10 +36,10 @@ do(#nicira_header{ sub_type = flow_mod,
     MatchBin = encode_matches(Match),
     MatchLen = byte_size(MatchBin),
     ActionsBin = flex_msg_v1_encode:encode_actions(Actions),
-    <<?NXT_FLOW_MOD:32, Cookie:8/bytes, CommandInt:16, Idle:16,
+    <<?NXT_FLOW_MOD:32, Cookie:8/bytes, TableId:8, CommandInt:8, Idle:16,
       Hard:16, Priority:16, BufferIdInt:32, OutPortInt:16,
       FlagsBin:2/bytes, MatchLen:16, 0:48, MatchBin/bytes, ActionsBin/bytes>>.
-    
+
 %%------------------------------------------------------------------------------
 %% Internal functions
 %%------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ encode_matches([], Binary) ->
     MatchesLength = byte_size(Binary),
     Padding = flex_msg_v1_utils:padding(MatchesLength, 8) * 8,
     <<Binary/bytes, 0:Padding>>;
-encode_matches([Match | Rest], Binary) -> 
+encode_matches([Match | Rest], Binary) ->
     MatchBin = encode_match(Match),
     encode_matches(Rest, <<Binary/bytes, MatchBin/bytes>>).
 
@@ -74,9 +74,9 @@ encode_match(#oxm_field{ vendor = Vendor, field = Field,
             ValueBin = <<Value:BitLength/bits, Mask:BitLength/bits>>,
             Length = byte_size(ValueBin),
             <<VendorInt:16, FieldInt:7, HasMaskInt:1, Length:8, ValueBin/bytes>>
-    end.    
+    end.
 
-encode_match_header(#nxm_field_header{vendor = Vendor, field = Field, 
+encode_match_header(#nxm_field_header{vendor = Vendor, field = Field,
                                       has_mask = HasMask }) ->
     VendorInt = nxm_vendor(Vendor),
     FieldInt = nxm_field(VendorInt, Field),
@@ -88,7 +88,7 @@ encode_match_header(#nxm_field_header{vendor = Vendor, field = Field,
     ByteLength = (BitLength + 7) div 8,
     <<VendorInt:16, FieldInt:7, HasMaskInt:1, ByteLength:8>>.
 
-encode_action(#nx_action_resubmit{ subtype = SubType, 
+encode_action(#nx_action_resubmit{ subtype = SubType,
                                    in_port = InPort, table_id = TableId }) ->
     SubTypeInt = case SubType of
                      resubmit       -> ?NXAST_RESUBMIT;
@@ -98,7 +98,7 @@ encode_action(#nx_action_resubmit{ subtype = SubType,
     TableIdInt = get_id(table_id, TableId),
     <<SubTypeInt:16, InPortInt:16, TableIdInt:8, 0:24>>;
 encode_action(#nx_action_learn{ idle_timeout = Idle, hard_timeout = Hard,
-                                priority = Priority, cookie = Cookie, 
+                                priority = Priority, cookie = Cookie,
                                 flags = Flags, table_id = TableId,
                                 fin_idle_timeout = FinIdle,
                                 fin_hard_timeout = FinHard,
@@ -109,7 +109,7 @@ encode_action(#nx_action_learn{ idle_timeout = Idle, hard_timeout = Hard,
     <<?NXAST_LEARN:16, Idle:16, Hard:16, Priority:16,
       Cookie:8/bytes, FlagsBin:2/bytes, TableIdInt:8,
       0:8, FinIdle:16, FinHard:16, FMSBin/bytes>>.
-    
+
 encode_flow_mod_specs(FMS) -> encode_flow_mod_specs(FMS, <<>>).
 
 encode_flow_mod_specs([], Binary) ->
@@ -126,7 +126,7 @@ encode_flow_mod_spec(#learn_match_field{ src = SrcMatch, dst = DstMatch }) ->
     SrcMatchBin = encode_match_header(SrcMatch),
     DstMatchBin = encode_match_header(DstMatch),
     { Src, Dst } = nx_learn_flow_mod_spec(match_field),
-    <<0:1, Src:2, Dst:2, NBits:11, 
+    <<0:1, Src:2, Dst:2, NBits:11,
       SrcMatchBin/bytes, 0:16,
       DstMatchBin/bytes, 0:16>>;
 encode_flow_mod_spec(#learn_immediate_field{ value = Value, dst = DstMatch }) ->
@@ -142,7 +142,7 @@ encode_flow_mod_spec(#learn_load_field{src = SrcMatch, dst = DstMatch }) ->
     SrcMatchBin = encode_match_header(SrcMatch),
     DstMatchBin = encode_match_header(DstMatch),
     { Src, Dst } = nx_learn_flow_mod_spec(load_field),
-    <<0:1, Src:2, Dst:2, NBits:11, 
+    <<0:1, Src:2, Dst:2, NBits:11,
       SrcMatchBin/bytes, 0:16,
       DstMatchBin/bytes, 0:16>>;
 encode_flow_mod_spec(#learn_load_immediate_field{ value = Value,
@@ -158,7 +158,7 @@ encode_flow_mod_spec(#learn_output_action{ port = PortMatch }) ->
     NBits = flex_msg_nx_map:nxm_field_bit_length(Field),
     PortMatchBin = encode_match_header(PortMatch),
     { Src, Dst } = nx_learn_flow_mod_spec(output_action),
-    <<0:1, Src:2, Dst:2, NBits:11, 
+    <<0:1, Src:2, Dst:2, NBits:11,
       PortMatchBin/bytes, 0:16>>.
 
 -spec flags_to_binary(atom(), [atom()], integer()) -> binary().
@@ -174,10 +174,10 @@ nx_learn_flow_mod_spec(match_immediate) -> { 1, 0 };
 nx_learn_flow_mod_spec(load_field) -> { 0, 1 };
 nx_learn_flow_mod_spec(load_immediate) -> { 1, 1 };
 nx_learn_flow_mod_spec(output_action) -> { 0, 2 }.
-    
+
 nxm_vendor(nxm0) -> ?NXM0;
 nxm_vendor(nxm1) -> ?NXM1.
-    
+
 nxm_field(?NXM0, in_port) -> ?NXM_OF_IN_PORT;
 nxm_field(?NXM0, eth_dst) -> ?NXM_OF_ETH_DST;
 nxm_field(?NXM0, eth_src) -> ?NXM_OF_ETH_SRC;
