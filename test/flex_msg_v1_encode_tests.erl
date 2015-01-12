@@ -434,6 +434,29 @@ nx_flow_mod_add_encode_test() ->
     io:format("Packet: ~w~n", [Packet]),
     ?assertEqual(Packet, EMsg).
 
+nx_flow_mod_add_multicast_drop_encode_test() ->
+    Matches = [#oxm_field{ vendor = nxm0,
+                           field = eth_dst,
+                           value = <<16#01, 16#00, 16#5e, 16#00, 16#00, 16#00>>,
+                           mask = <<16#ff, 16#ff, 16#ff, 16#80, 16#00, 16#00>>,
+                           has_mask = true }],
+    FlowMod = #nx_flow_mod{
+                 command = add,
+                 table_id = 1,
+                 match = Matches,
+                 priority = 16384,
+                 actions = [] },
+    NXData = #nicira_header{ sub_type = flow_mod,
+                             body = FlowMod },
+    Body = #ofp_vendor_header{ vendor = nicira,
+                               data = NXData },
+    Msg = #ofp_header{ type = vendor, xid = 13, body = Body },
+    EMsg = ?MODNAME:encode(Msg),
+    Packet = packet(multicast_drop_flow),
+    io:format("EMsg: ~w~n", [EMsg]),
+    io:format("Packet: ~w~n", [Packet]),
+    ?assertEqual(Packet, EMsg).
+
 %%------------------------------------------------------------------------------
 %% Packets
 %%------------------------------------------------------------------------------
@@ -662,5 +685,9 @@ packet(Type) ->
               16#02, 16#06, 16#00, 16#00, 16#10, 16#10, 16#00, 16#00,
               16#00, 16#02, 16#00, 16#00, 16#00, 16#00, 16#00, 16#00,
               16#ff, 16#ff, 16#00, 16#10, 16#00, 16#00, 16#23, 16#20,
-              16#00, 16#0e, 16#ff, 16#f8, 16#01, 16#00, 16#00, 16#00>>
+              16#00, 16#0e, 16#ff, 16#f8, 16#01, 16#00, 16#00, 16#00>>;
+        multicast_drop_flow ->
+            <<1,4,0,64,0,0,0,13,0,0,35,32,0,0,0,13,0,0,0,0,0,0,0,0,1,
+              0,0,0,0,0,64,0,255,255,255,255,255,255,0,0,0,16,0,0,0,
+              0,0,0,0,0,3,12,1,0,94,0,0,0,255,255,255,128,0,0>>
     end.
