@@ -71,7 +71,6 @@ encode_match(#oxm_field{ vendor = Vendor, field = Field,
             FieldInt = nxm_field(VendorInt, Field),
             ValueBin = <<Value:BitLength/bits, Mask:BitLength/bits>>,
             Length = byte_size(ValueBin),
-            io:format("ValueLength: ~w~n", [Length]),
             <<VendorInt:16, FieldInt:7, HasMaskInt:1, Length:8, ValueBin/bytes>>
     end.
 
@@ -110,7 +109,7 @@ encode_action(#nx_action_learn{ idle_timeout = Idle, hard_timeout = Hard,
       0:8, FinIdle:16, FinHard:16, FMSBin/bytes>>;
 encode_action(#nx_action_note{ note = Note }) ->
     NoteLength = byte_size(Note),
-    Padding = flex_msg_v1_utils:padding(NoteLength, 8) * 8,
+    Padding = flex_msg_v1_utils:padding(NoteLength + 8, 8) * 8,
     <<?NXAST_NOTE:16, Note/bytes, 0:Padding>>.
 
 encode_flow_mod_specs(FMS) -> encode_flow_mod_specs(FMS, <<>>).

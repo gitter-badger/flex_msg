@@ -356,9 +356,8 @@ nx_set_packet_in_format_decode_test() ->
 nx_flow_mod_add_decode_test() ->
     Binary = packet(nx_flow_mod_add),
     { ok, DMsg, _Rest } = ?MODNAME:decode(Binary),
-    %io:format("~w~n", [DMsg]),
-    FMS1 = #learn_match_field{ 
-              src = #nxm_field_header{ vendor = nxm0, 
+    FMS1 = #learn_match_field{
+              src = #nxm_field_header{ vendor = nxm0,
                                        field = vlan_tci,
                                        has_mask = false },
               dst = #nxm_field_header{ vendor = nxm0,
@@ -385,7 +384,7 @@ nx_flow_mod_add_decode_test() ->
                                    priority = 32768,
                                    cookie = <<0:64>>,
                                    flags = [],
-                                   table_id = 1, 
+                                   table_id = 1,
                                    fin_idle_timeout = 0,
                                    fin_hard_timeout = 0,
                                    flow_mod_spec = [FMS1, FMS2, FMS3]}}},
@@ -398,7 +397,7 @@ nx_flow_mod_add_decode_test() ->
                                       in_port = in_port,
                                       table_id = 1 }}},
     FlowMod = #nx_flow_mod{
-                 command = add, 
+                 command = add,
                  priority = 32768,
                  actions = [Learn, Resubmit] },
     NXData = #nicira_header{ sub_type = flow_mod,
@@ -407,6 +406,27 @@ nx_flow_mod_add_decode_test() ->
                                data = NXData },
     Msg = #ofp_header{ type = vendor, xid = 13, body = Body },
     io:format("Msg: ~w~n", [Msg]),
+    ?assertEqual(Msg, DMsg).
+
+nx_flow_mod_add_multicast_drop_encode_test() ->
+    Binary = packet(multicast_drop_flow),
+    { ok, DMsg, _Rest } = ?MODNAME:decode(Binary),
+    Matches = [#oxm_field{ vendor = nxm0,
+                           field = eth_dst,
+                           value = <<16#01, 16#00, 16#5e, 16#00, 16#00, 16#00>>,
+                           mask = <<16#00, 16#00, 16#00, 16#7f, 16#ff, 16#ff>>,
+                           has_mask = true }],
+    FlowMod = #nx_flow_mod{
+                 command = add,
+                 table_id = 0,
+                 match = Matches,
+                 priority = 65535,
+                 actions = [] },
+    NXData = #nicira_header{ sub_type = flow_mod,
+                             body = FlowMod },
+    Body = #ofp_vendor_header{ vendor = nicira,
+                               data = NXData },
+    Msg = #ofp_header{ type = vendor, xid = 13, body = Body },
     ?assertEqual(Msg, DMsg).
 
 %%------------------------------------------------------------------------------
@@ -637,5 +657,9 @@ packet(Type) ->
               16#02, 16#06, 16#00, 16#00, 16#10, 16#10, 16#00, 16#00,
               16#00, 16#02, 16#00, 16#00, 16#00, 16#00, 16#00, 16#00,
               16#ff, 16#ff, 16#00, 16#10, 16#00, 16#00, 16#23, 16#20,
-              16#00, 16#0e, 16#ff, 16#f8, 16#01, 16#00, 16#00, 16#00>>
+              16#00, 16#0e, 16#ff, 16#f8, 16#01, 16#00, 16#00, 16#00>>;
+        multicast_drop_flow ->
+            <<1,4,0,64,0,0,0,13,0,0,35,32,0,0,0,13,0,0,0,0,0,0,0,0,0,
+              0,0,0,0,0,255,255,255,255,255,255,255,255,0,0,0,16,0,0,
+              0,0,0,0,0,0,3,12,1,0,94,0,0,0,0,0,0,127,255,255>>
     end.

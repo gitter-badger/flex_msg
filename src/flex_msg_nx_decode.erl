@@ -74,6 +74,7 @@ decode_match(<<VendorInt:16, FieldInt:7, 1:1, Length:8, Rest/bytes>>) ->
     BitLength = flex_msg_nx_map:nxm_field_bit_length(Field),
     { #oxm_field{ vendor = Vendor,
                   field = Field,
+                  has_mask = true,
                   value = flex_msg_v1_utils:uncut_bits(Value, BitLength),
                   mask = flex_msg_v1_utils:uncut_bits(Mask, BitLength) },
       Next }.
