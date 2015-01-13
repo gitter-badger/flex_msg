@@ -114,7 +114,9 @@ decode_action(<<?NXAST_LEARN:16, Idle:16, Hard:16, Priority:16,
        table_id = TableId,
        fin_idle_timeout = FinIdle,
        fin_hard_timeout = FinHard,
-       flow_mod_spec = FlowModSpecs }.
+       flow_mod_spec = FlowModSpecs };
+decode_action(<<?NXAST_NOTE:16, Note/bytes>>) ->
+    #nx_action_note{ note = Note }.
 
 decode_flow_mod_specs(Binary) -> decode_flow_mod_specs(Binary, []).
 

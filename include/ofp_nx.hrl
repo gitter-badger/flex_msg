@@ -154,6 +154,11 @@
           flow_mod_spec = [] }).
 -type nx_action_learn() :: #nx_action_learn{}.
 
+-define(NXAST_NOTE, 8).
+-record(nx_action_note, {
+          note = <<>> :: binary() }).
+-type nx_action_note() :: #nx_action_note{}.
+
 %%%-----------------------------------------------------------------------------
 %%% Read State Message
 %%%-----------------------------------------------------------------------------

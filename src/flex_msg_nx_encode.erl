@@ -107,7 +107,11 @@ encode_action(#nx_action_learn{ idle_timeout = Idle, hard_timeout = Hard,
     FlagsBin = flags_to_binary(nx_learn_flags, Flags, 2),
     <<?NXAST_LEARN:16, Idle:16, Hard:16, Priority:16,
       Cookie:8/bytes, FlagsBin:2/bytes, TableIdInt:8,
-      0:8, FinIdle:16, FinHard:16, FMSBin/bytes>>.
+      0:8, FinIdle:16, FinHard:16, FMSBin/bytes>>;
+encode_action(#nx_action_note{ note = Note }) ->
+    NoteLength = byte_size(Note),
+    Padding = flex_msg_v1_utils:padding(NoteLength, 8) * 8,
+    <<?NXAST_NOTE:16, Note/bytes, 0:Padding>>.
 
 encode_flow_mod_specs(FMS) -> encode_flow_mod_specs(FMS, <<>>).
 
