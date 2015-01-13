@@ -36,12 +36,10 @@ do(#nicira_header{ sub_type = flow_mod,
     MatchBin = encode_matches(Match),
     MatchLen = byte_size(MatchBin),
     ActionsBin = flex_msg_v1_encode:encode_actions(Actions),
-    ActionsLength = byte_size(ActionsBin),
-    Padding = flex_msg_v1_utils:padding(ActionsLength, 8) * 8,
     <<?NXT_FLOW_MOD:32, Cookie:8/bytes, TableId:8, CommandInt:8, Idle:16,
       Hard:16, Priority:16, BufferIdInt:32, OutPortInt:16,
       FlagsBin:2/bytes, MatchLen:16, 0:48, MatchBin/bytes,
-      ActionsBin/bytes, 0:Padding>>.
+      ActionsBin/bytes>>.
 
 %%------------------------------------------------------------------------------
 %% Internal functions

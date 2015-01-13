@@ -33,12 +33,16 @@ do(#ofp_header{ type = vendor, xid = Xid,
     Data = flex_msg_nx_encode:do(Nx),
     Length = ?OFP_VENDOR_HEADER_SIZE + byte_size(Data),
     Body = <<?NX_VENDOR_ID:32, Data/bytes>>,
-    <<?VERSION:8, ?OFPT_VENDOR:8, Length:16, Xid:32, Body/bytes>>;
+    Padding = flex_msg_v1_utils:padding(Length, 8) * 8,
+    Length2 = Length + Padding div 8,
+    <<?VERSION:8, ?OFPT_VENDOR:8, Length2:16, Xid:32, Body/bytes, 0:Padding>>;
 do(#ofp_header{ type = vendor, xid = Xid,
                 body = #ofp_vendor_header{ vendor = Vendor, data = Data } }) ->
     Length = ?OFP_VENDOR_HEADER_SIZE + byte_size(Data),
+    Padding = flex_msg_v1_utils:padding(Length, 8) * 8,
+    Length2 = Length + Padding div 8,
     Body = <<Vendor:32, Data/bytes>>,
-    <<?VERSION:8, ?OFPT_VENDOR:8, Length:16, Xid:32, Body/bytes>>;
+    <<?VERSION:8, ?OFPT_VENDOR:8, Length2:16, Xid:32, Body/bytes, 0:Padding>>;
 do(#ofp_header{ type = features_request, xid = Xid,
                 body = #ofp_features_request{} }) ->
     Length = ?OFP_FEATURES_REQUEST_SIZE,
