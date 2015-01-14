@@ -118,7 +118,11 @@ encode_action(#nx_action_set_tunnel64{ tun_id = TunId }) ->
 encode_action(#nx_action_set_queue{ queue_id = QueueId }) ->
     <<?NXAST_SET_QUEUE:16, 0:16, QueueId:32>>;
 encode_action(#nx_action_pop_queue{}) ->
-    <<?NXAST_POP_QUEUE:16, 0:48>>.
+    <<?NXAST_POP_QUEUE:16, 0:48>>;
+encode_action(#nx_action_fin_timeout{ fin_idle_timeout = FinIdle,
+                                      fin_hard_timeout = FinHard }) ->
+    <<?NXAST_FIN_TIMEOUT:16, FinIdle:16, FinHard:16, 0:16>>.
+
 
 encode_flow_mod_specs(FMS) -> encode_flow_mod_specs(FMS, <<>>).
 

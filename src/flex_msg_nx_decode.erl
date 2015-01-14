@@ -125,7 +125,10 @@ decode_action(<<?NXAST_SET_TUNNEL64:16, _:48, TunId:64>>) ->
 decode_action(<<?NXAST_SET_QUEUE:16, _:16, QueueId:32>>) ->
     #nx_action_set_queue{ queue_id = QueueId };
 decode_action(<<?NXAST_POP_QUEUE:16, _:48>>) ->
-    #nx_action_pop_queue{}.
+    #nx_action_pop_queue{};
+decode_action(<<?NXAST_FIN_TIMEOUT:16, FinIdle:16, FinHard:16, _:16>>) ->
+    #nx_action_fin_timeout{ fin_idle_timeout = FinIdle,
+                            fin_hard_timeout = FinHard }.
 
 decode_flow_mod_specs(Binary) -> decode_flow_mod_specs(Binary, []).
 
