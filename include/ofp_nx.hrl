@@ -114,13 +114,88 @@
           mask }).
 -type oxm_field() :: #oxm_field{}.
 
+%%%-----------------------------------------------------------------------------
+%%% NX Flow Action Structures
+%%%-----------------------------------------------------------------------------
+
 -define(NXAST_RESUBMIT, 1).
--define(NXAST_RESUBMIT_TABLE, 14).
+-define(NXAST_RESUBMIT_TABLE, 14).% resubmit_table uses nx_action_resubmit structure.
 -record(nx_action_resubmit, {
           subtype :: resubmit | resubmit_table,
           in_port = in_port,
           table_id = 16#ff }).
 -type nx_action_resubmit() :: #nx_action_resubmit{}.
+
+-define(NXAST_SET_TUNNEL, 2).
+-record(nx_action_set_tunnel, { tun_id = 0 :: integer() }).
+-type nx_action_set_tunnel() :: #nx_action_set_tunnel{}.
+
+-define(NXAST_DROP_SPOOFED_ARP__OBSOLETE, 3).
+
+-define(NXAST_SET_QUEUE, 4).
+-record(nx_action_set_queue, { queue_id = 0 :: integer() }).
+-type nx_action_set_queue() :: #nx_action_set_queue{}.
+
+-define(NXAST_POP_QUEUE, 5).
+-record(nx_action_pop_queue, { queue_id = 0 :: integer() }).
+-type nx_action_pop_queue() :: #nx_action_pop_queue{}.
+
+-define(NXAST_REG_MOVE, 6).
+-record(nx_action_reg_move, {
+          n_bits :: integer(),
+          src_ofs :: integer(),
+          dst_ofs :: integer(),
+          src,
+          dst }).
+-type nx_action_reg_move() :: #nx_action_reg_move{}.
+
+-define(NXAST_REG_LOAD, 7).
+-record(nx_action_reg_load, {
+          ofs_nbits :: integer(),
+          dst,
+          value }).
+-type nx_action_reg_load() :: #nx_action_reg_load{}.
+
+-define(NXAST_NOTE, 8).
+-record(nx_action_note, {
+          note = <<>> :: binary() }).
+-type nx_action_note() :: #nx_action_note{}.
+
+-define(NXAST_SET_TUNNEL64, 9).
+-record(nx_action_set_tunnel64, { tun_id = 0 :: integer() }).
+-type nx_action_set_tunnel64() :: #nx_action_set_tunnel64{}.
+
+-define(NXAST_MULTIPATH, 10).
+-record(nx_action_multipath, {
+          fields,
+          basis,
+          algorithm,
+          max_link,
+          arg,
+          ofs_nbits,
+          dst }).
+-type nx_action_multipath() :: #nx_action_multipath{}.
+
+-define(NXAST_AUTOPATH__OBSOLETE, 11).
+
+-define(NXAST_BUNDLE, 12).
+-define(NXAST_BUNDLE_LOAD, 13). % bundle_load uses nx_action_bundle structure
+-record(nx_action_bundle, {
+          algorithm,
+          fields,
+          basis,
+          slave_type,
+          n_slaves,
+          ofs_nbits,
+          dst }).
+-type nx_action_bundle() :: #nx_action_bundle{}.
+
+-define(NXAST_OUTPUT_REG, 15).
+-record(nx_action_output_reg, {
+          ofs_nbits :: integer(),
+          src,
+          max_len :: integer() }).
+-type nx_action_output_reg() :: #nx_action_output_reg{}.
 
 -define(NX_FLOW_MOD_SPEC_HEADER_SIZE, 2).
 -record(nx_flow_mod_spec_header, { action, n_bits }).
@@ -154,18 +229,70 @@
           flow_mod_spec = [] }).
 -type nx_action_learn() :: #nx_action_learn{}.
 
--define(NXAST_NOTE, 8).
--record(nx_action_note, {
-          note = <<>> :: binary() }).
--type nx_action_note() :: #nx_action_note{}.
+-define(NXAST_EXIT, 17). % action_header only.
+-define(NXAST_DEC_TTL, 18). % action_header only.
 
--define(NXAST_SET_TUNNEL, 2).
--record(nx_action_set_tunnel, { tun_id = 0 :: integer() }).
--type nx_action_set_tunnel() :: #nx_action_set_tunnel{}.
+-define(NXAST_FIN_TIMEOUT, 19).
+-record(nx_action_fin_timeout, {
+          fin_idle_timeout = 0 :: integer(),
+          fin_hard_timeout = 0 :: integer() }).
+-type nx_action_fin_timeout() :: #nx_action_fin_timeout{}.
 
--define(NXAST_SET_TUNNEL64, 9).
--record(nx_action_set_tunnel64, { tun_id = 0 :: integer() }).
--type nx_action_set_tunnel64() :: #nx_action_set_tunnel64{}.
+-define(NXAST_CONTROLLER, 20).
+-record(nx_action_controller, {
+          max_len = 128 :: integer(),
+          controller_id }).
+-type nx_action_controller() :: #nx_action_controller{}.
+
+-define(NXAST_DEC_TTL_CNT_IDS, 21).
+-record(nx_action_cnt_ids, {
+          n_controllers :: integer(),
+          cnt_ids }).
+-type nx_action_cnt_ids() :: #nx_action_cnt_ids{}.
+
+-define(NXAST_WRITE_METADATA, 22).
+-record(nx_action_write_metadata, {
+          meta_data = <<0:64>> :: binary(),
+          mask = <<0:64>> :: binary() }).
+-type nx_action_write_metadata() :: #nx_action_write_metadata{}.
+
+-define(NXAST_PUSH_MPLS, 23).
+-record(nx_action_push_mpls, { eth_type :: integer() }).
+-type nx_action_push_mpls() :: #nx_action_push_mpls{}.
+
+-define(NXAST_POP_MPLS, 24).
+-record(nx_action_pop_mpls, { eth_type :: integer() }).
+-type nx_action_pop_mpls() :: #nx_action_pop_mpls{}.
+
+-define(NXAST_SET_MPLS_TTL, 25).
+-record(nx_action_mpls_ttl, { ttl = 0 :: integer() }).
+-type nx_action_mpls_ttl() :: #nx_action_mpls_ttl{}.
+
+-define(NXAST_DEC_MPLS_TTL, 26). %nx_dec_mpls_ttl uses nx_action_header.
+
+-define(NXAST_STACK_PUSH, 27).
+-define(NXAST_STACK_POP, 28).
+-record(nx_action_stack, {
+          offset :: integer(),
+          field,
+          n_bits :: integer() }).
+-type nx_action_stack() :: #nx_action_stack{}.
+
+-define(NXAST_SAMPLE, 29).
+-record(nx_action_sample, {
+          probability,
+          collector_set_id,
+          obs_domain_id,
+          obs_point_id }).
+-type nx_action_sample() :: #nx_action_sample{}.
+
+-define(NXAST_SET_MPLS_LABEL, 30).
+-record(nx_action_mpls_label, { label :: integer() }).
+-type nx_action_mpls_label() :: #nx_action_mpls_label{}.
+
+-define(NXAST_SET_MPLS_TC, 31).
+-record(nx_action_mpls_tc, { tc :: integer() }).
+-type nx_action_mpls_tc() :: #nx_action_mpls_tc{}.
 
 %%%-----------------------------------------------------------------------------
 %%% Read State Message
