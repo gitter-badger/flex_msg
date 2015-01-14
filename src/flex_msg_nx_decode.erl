@@ -117,7 +117,11 @@ decode_action(<<?NXAST_LEARN:16, Idle:16, Hard:16, Priority:16,
        fin_hard_timeout = FinHard,
        flow_mod_spec = FlowModSpecs };
 decode_action(<<?NXAST_NOTE:16, Note/bytes>>) ->
-    #nx_action_note{ note = Note }.
+    #nx_action_note{ note = Note };
+decode_action(<<?NXAST_SET_TUNNEL:16, _:16, TunId:32>>) ->
+    #nx_action_set_tunnel{ tun_id = TunId };
+decode_action(<<?NXAST_SET_TUNNEL64:16, _:48, TunId:64>>) ->
+    #nx_action_set_tunnel64{ tun_id = TunId }.
 
 decode_flow_mod_specs(Binary) -> decode_flow_mod_specs(Binary, []).
 

@@ -159,6 +159,14 @@
           note = <<>> :: binary() }).
 -type nx_action_note() :: #nx_action_note{}.
 
+-define(NXAST_SET_TUNNEL, 2).
+-record(nx_action_set_tunnel, { tun_id = 0 :: integer() }).
+-type nx_action_set_tunnel() :: #nx_action_set_tunnel{}.
+
+-define(NXAST_SET_TUNNEL64, 9).
+-record(nx_action_set_tunnel64, { tun_id = 0 :: integer() }).
+-type nx_action_set_tunnel64() :: #nx_action_set_tunnel64{}.
+
 %%%-----------------------------------------------------------------------------
 %%% Read State Message
 %%%-----------------------------------------------------------------------------

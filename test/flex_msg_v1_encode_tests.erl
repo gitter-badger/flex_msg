@@ -457,6 +457,73 @@ nx_flow_mod_add_multicast_drop_encode_test() ->
     io:format("Packet: ~w~n", [Packet]),
     ?assertEqual(Packet, EMsg).
 
+nx_flow_mod_actions_encode_test() ->
+    FMS1 = #learn_match_field{
+              src = #nxm_field_header{ vendor = nxm0,
+                                       field = vlan_tci,
+                                       has_mask = false },
+              dst = #nxm_field_header{ vendor = nxm0,
+                                       field = vlan_tci,
+                                       has_mask = false }},
+    FMS2 = #learn_match_field{
+              src = #nxm_field_header{ vendor = nxm0,
+                                       field = eth_src,
+                                       has_mask = false },
+              dst = #nxm_field_header{ vendor = nxm0,
+                                       field = eth_dst,
+                                       has_mask = false}},
+    FMS3 = #learn_output_action{
+              port = #nxm_field_header{ vendor = nxm0,
+                                        field = in_port,
+                                        has_mask = false }},
+    Learn = #ofp_action_header{
+               type = vendor,
+               body = #ofp_action_vendor{
+                         vendor = nicira,
+                         data = #nx_action_learn{
+                                   idle_timeout = 0,
+                                   hard_timeout = 10,
+                                   priority = 32768,
+                                   cookie = <<0:64>>,
+                                   flags = [],
+                                   table_id = 1,
+                                   fin_idle_timeout = 0,
+                                   fin_hard_timeout = 0,
+                                   flow_mod_spec = [FMS1, FMS2, FMS3]}}},
+    Resubmit = #ofp_action_header{
+                  type = vendor,
+                  body = #ofp_action_vendor{
+                            vendor = nicira,
+                            data = #nx_action_resubmit{
+                                      subtype = resubmit_table,
+                                      in_port = in_port,
+                                      table_id = 1 }}},
+    Tun = #ofp_action_header{
+             type = vendor,
+             body = #ofp_action_vendor{
+                       vendor = nicira,
+                       data = #nx_action_set_tunnel{ tun_id = 1 }}},
+    Tun64 = #ofp_action_header{
+             type = vendor,
+             body = #ofp_action_vendor{
+                       vendor = nicira,
+                       data = #nx_action_set_tunnel64{ tun_id = 2 }}},
+    FlowMod = #nx_flow_mod{
+                 command = add,
+                 table_id = 0,
+                 priority = 32768,
+                 actions = [Learn, Tun, Tun64, Resubmit] },
+    NXData = #nicira_header{ sub_type = flow_mod,
+                             body = FlowMod },
+    Body = #ofp_vendor_header{ vendor = nicira,
+                               data = NXData },
+    Msg = #ofp_header{ type = vendor, xid = 13, body = Body },
+    EMsg = ?MODNAME:encode(Msg),
+    Packet = packet(nx_flow_mod_actions),
+    io:format("EMsg: ~w~n", [EMsg]),
+    io:format("Packet: ~w~n", [Packet]),
+    ?assertEqual(Packet, EMsg).
+
 %%------------------------------------------------------------------------------
 %% Packets
 %%------------------------------------------------------------------------------
@@ -690,5 +757,14 @@ packet(Type) ->
         multicast_drop_flow ->
             <<1,4,0,64,0,0,0,13,0,0,35,32,0,0,0,13,0,0,0,0,0,0,0,0,0,
               0,0,0,0,0,255,255,255,255,255,255,255,255,0,0,0,16,0,0,
-              0,0,0,0,0,0,3,12,1,0,94,0,0,0,0,0,0,127,255,255>>
+              0,0,0,0,0,0,3,12,1,0,94,0,0,0,0,0,0,127,255,255>>;
+        nx_flow_mod_actions ->
+            <<1,4,0,176,0,0,0,13,0,0,35,32,0,0,0,13,0,0,0,0,0,0,0,0,0,
+              0,0,0,0,0,128,0,255,255,255,255,255,255,0,0,0,0,0,0,0,0,
+              0,0,255,255,0,72,0,0,35,32,0,16,0,0,0,10,128,0,0,0,0,0,
+              0,0,0,0,0,0,1,0,0,0,0,0,0,12,0,0,8,2,0,0,0,0,8,2,0,0,0,
+              48,0,0,4,6,0,0,0,0,2,6,0,0,16,16,0,0,0,2,0,0,0,0,0,0,
+              255,255,0,16,0,0,35,32,0,2,0,0,0,0,0,1,255,255,0,24,0,0,
+              35,32,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,2,255,255,0,16,0,0,
+              35,32,0,14,255,248,1,0,0,0>>
     end.

@@ -110,7 +110,11 @@ encode_action(#nx_action_learn{ idle_timeout = Idle, hard_timeout = Hard,
 encode_action(#nx_action_note{ note = Note }) ->
     NoteLength = byte_size(Note),
     Padding = flex_msg_v1_utils:padding(NoteLength + 8, 8) * 8,
-    <<?NXAST_NOTE:16, Note/bytes, 0:Padding>>.
+    <<?NXAST_NOTE:16, Note/bytes, 0:Padding>>;
+encode_action(#nx_action_set_tunnel{ tun_id = TunId }) ->
+    <<?NXAST_SET_TUNNEL:16, 0:16, TunId:32>>;
+encode_action(#nx_action_set_tunnel64{ tun_id = TunId }) ->
+    <<?NXAST_SET_TUNNEL64:16, 0:48, TunId:64>>.
 
 encode_flow_mod_specs(FMS) -> encode_flow_mod_specs(FMS, <<>>).
 
