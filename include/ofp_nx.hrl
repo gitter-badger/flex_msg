@@ -151,9 +151,9 @@
 
 -define(NXAST_REG_LOAD, 7).
 -record(nx_action_reg_load, {
-          ofs_nbits :: integer(),
+          offset_nbits :: integer(),
           dst,
-          value }).
+          value :: integer() }).
 -type nx_action_reg_load() :: #nx_action_reg_load{}.
 
 -define(NXAST_NOTE, 8).

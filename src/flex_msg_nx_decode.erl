@@ -134,8 +134,10 @@ decode_action(<<?NXAST_REG_MOVE:16, Nbits:16, SrcOfs:16, DstOfs:16,
     SrcMatch = decode_match_header(SrcMatchBin),
     DstMatch = decode_match_header(DstMatchBin),
     #nx_action_reg_move{ n_bits = Nbits, src_offset = SrcOfs,
-                         dst_offset = DstOfs, src = SrcMatch, dst = DstMatch }.
-
+                         dst_offset = DstOfs, src = SrcMatch, dst = DstMatch };
+decode_action(<<?NXAST_REG_LOAD:16, OffSet:16, DstMatchBin:4/bytes, Value:64>>) ->
+    DstMatch = decode_match_header(DstMatchBin),
+    #nx_action_reg_load{ offset_nbits = OffSet, dst = DstMatch, value = Value }.
 
 decode_flow_mod_specs(Binary) -> decode_flow_mod_specs(Binary, []).
 

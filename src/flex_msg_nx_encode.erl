@@ -126,7 +126,10 @@ encode_action(#nx_action_reg_move{ n_bits = Nbits, src_offset = SrcOfs,
                                    dst_offset = DstOfs, src = SrcMatch, dst = DstMatch }) ->
     SrcMatchBin = encode_match_header(SrcMatch),
     DstMatchBin = encode_match_header(DstMatch),
-    <<?NXAST_REG_MOVE:16, Nbits:16, SrcOfs:16, DstOfs:16, SrcMatchBin:4/bytes, DstMatchBin:4/bytes>>.
+    <<?NXAST_REG_MOVE:16, Nbits:16, SrcOfs:16, DstOfs:16, SrcMatchBin:4/bytes, DstMatchBin:4/bytes>>;
+encode_action(#nx_action_reg_load{ offset_nbits = OffSet, dst = DstMatch, value = Value }) ->
+    DstMatchBin = encode_match_header(DstMatch),
+    <<?NXAST_REG_LOAD:16, OffSet:16, DstMatchBin:4/bytes, Value:64>>.
 
 encode_flow_mod_specs(FMS) -> encode_flow_mod_specs(FMS, <<>>).
 
