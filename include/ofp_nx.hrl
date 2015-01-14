@@ -143,8 +143,8 @@
 -define(NXAST_REG_MOVE, 6).
 -record(nx_action_reg_move, {
           n_bits :: integer(),
-          src_ofs :: integer(),
-          dst_ofs :: integer(),
+          src_offset :: integer(),
+          dst_offset :: integer(),
           src,
           dst }).
 -type nx_action_reg_move() :: #nx_action_reg_move{}.

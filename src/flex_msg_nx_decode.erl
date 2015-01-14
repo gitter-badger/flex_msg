@@ -128,7 +128,14 @@ decode_action(<<?NXAST_POP_QUEUE:16, _:48>>) ->
     #nx_action_pop_queue{};
 decode_action(<<?NXAST_FIN_TIMEOUT:16, FinIdle:16, FinHard:16, _:16>>) ->
     #nx_action_fin_timeout{ fin_idle_timeout = FinIdle,
-                            fin_hard_timeout = FinHard }.
+                            fin_hard_timeout = FinHard };
+decode_action(<<?NXAST_REG_MOVE:16, Nbits:16, SrcOfs:16, DstOfs:16,
+                SrcMatchBin:4/bytes, DstMatchBin:4/bytes>>) ->
+    SrcMatch = decode_match_header(SrcMatchBin),
+    DstMatch = decode_match_header(DstMatchBin),
+    #nx_action_reg_move{ n_bits = Nbits, src_offset = SrcOfs,
+                         dst_offset = DstOfs, src = SrcMatch, dst = DstMatch }.
+
 
 decode_flow_mod_specs(Binary) -> decode_flow_mod_specs(Binary, []).
 
