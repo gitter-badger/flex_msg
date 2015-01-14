@@ -121,7 +121,11 @@ decode_action(<<?NXAST_NOTE:16, Note/bytes>>) ->
 decode_action(<<?NXAST_SET_TUNNEL:16, _:16, TunId:32>>) ->
     #nx_action_set_tunnel{ tun_id = TunId };
 decode_action(<<?NXAST_SET_TUNNEL64:16, _:48, TunId:64>>) ->
-    #nx_action_set_tunnel64{ tun_id = TunId }.
+    #nx_action_set_tunnel64{ tun_id = TunId };
+decode_action(<<?NXAST_SET_QUEUE:16, _:16, QueueId:32>>) ->
+    #nx_action_set_queue{ queue_id = QueueId };
+decode_action(<<?NXAST_POP_QUEUE:16, _:48>>) ->
+    #nx_action_pop_queue{}.
 
 decode_flow_mod_specs(Binary) -> decode_flow_mod_specs(Binary, []).
 

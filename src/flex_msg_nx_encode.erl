@@ -114,7 +114,11 @@ encode_action(#nx_action_note{ note = Note }) ->
 encode_action(#nx_action_set_tunnel{ tun_id = TunId }) ->
     <<?NXAST_SET_TUNNEL:16, 0:16, TunId:32>>;
 encode_action(#nx_action_set_tunnel64{ tun_id = TunId }) ->
-    <<?NXAST_SET_TUNNEL64:16, 0:48, TunId:64>>.
+    <<?NXAST_SET_TUNNEL64:16, 0:48, TunId:64>>;
+encode_action(#nx_action_set_queue{ queue_id = QueueId }) ->
+    <<?NXAST_SET_QUEUE:16, 0:16, QueueId:32>>;
+encode_action(#nx_action_pop_queue{}) ->
+    <<?NXAST_POP_QUEUE:16, 0:48>>.
 
 encode_flow_mod_specs(FMS) -> encode_flow_mod_specs(FMS, <<>>).
 

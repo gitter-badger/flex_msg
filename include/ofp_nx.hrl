@@ -137,7 +137,7 @@
 -type nx_action_set_queue() :: #nx_action_set_queue{}.
 
 -define(NXAST_POP_QUEUE, 5).
--record(nx_action_pop_queue, { queue_id = 0 :: integer() }).
+-record(nx_action_pop_queue, {}).
 -type nx_action_pop_queue() :: #nx_action_pop_queue{}.
 
 -define(NXAST_REG_MOVE, 6).
