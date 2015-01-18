@@ -38,7 +38,7 @@ do(#nicira_header{ sub_type = flow_mod,
     ActionsBin = flex_msg_v1_encode:encode_actions(Actions),
     <<?NXT_FLOW_MOD:32, Cookie:8/bytes, TableId:8, CommandInt:8, Idle:16,
       Hard:16, Priority:16, BufferIdInt:32, OutPortInt:16,
-      FlagsBin:2/bytes, MatchLen:16, 0:48, MatchBin/bytes,
+      FlagsBin:2/bytes, MatchLen:16, 0:48, (pad_to(8, MatchBin))/bytes,
       ActionsBin/bytes>>.
 
 %%------------------------------------------------------------------------------
@@ -189,6 +189,15 @@ flags_to_binary(Type, Flags, Size) ->
 -spec get_id(atom(), integer() | atom()) -> integer() | atom().
 get_id(Enum, Value) ->
     flex_msg_v1_utils:get_enum_value(flex_msg_v1_enum, Enum, Value).
+
+pad_to(Width, Binary) ->
+    case pad_length(Width, size(Binary)) of
+        0 -> Binary;
+        N -> <<Binary/binary, 0:(N*8)>>
+    end.
+
+pad_length(Width, Length) ->
+     (Width - Length rem Width) rem Width.
 
 nx_learn_flow_mod_spec(match_field) -> { 0, 0 };
 nx_learn_flow_mod_spec(match_immediate) -> { 1, 0 };
