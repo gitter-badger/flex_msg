@@ -62,7 +62,10 @@ do(#nicira_header{ sub_type = role_reply,
                   master -> ?NX_ROLE_MASTER;
                   slave  -> ?NX_ROLE_SLAVE
               end,
-    <<?NXT_ROLE_REPLY:32, RoleInt:32>>.
+    <<?NXT_ROLE_REPLY:32, RoleInt:32>>;
+do(#nicira_header{ sub_type = set_controller_id,
+                   body = #nx_controller_id{ id = Id }}) ->
+    <<?NXT_SET_CONTROLLER_ID:32, 0:48, Id:16>>.
 
 %%------------------------------------------------------------------------------
 %% Internal functions

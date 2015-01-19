@@ -568,6 +568,17 @@ nx_role_reply_decode_test() ->
     io:format("EMsg: ~w~n", [DMsg]),
     ?assertEqual(Msg, DMsg).
 
+nx_set_controller_id_decode_test() ->
+    Binary = packet(set_controller_id),
+    { ok, DMsg, _Rest } = ?MODNAME:decode(Binary),
+    NXData = #nicira_header{ sub_type = set_controller_id,
+                             body = #nx_controller_id{ id = 1 }},
+    Body = #ofp_vendor_header{ vendor = nicira,
+                               data = NXData },
+    Msg = #ofp_header{ type = vendor, xid = 7, body = Body },
+    io:format("EMsg: ~w~n", [DMsg]),
+    ?assertEqual(Msg, DMsg).
+
 %%------------------------------------------------------------------------------
 %% Packets
 %%------------------------------------------------------------------------------
@@ -818,5 +829,7 @@ packet(Type) ->
         role_request ->
             <<1,4,0,20,0,0,0,7,0,0,35,32,0,0,0,10,0,0,0,1>>;
         role_reply ->
-            <<1,4,0,20,0,0,0,7,0,0,35,32,0,0,0,11,0,0,0,1>>
+            <<1,4,0,20,0,0,0,7,0,0,35,32,0,0,0,11,0,0,0,1>>;
+        set_controller_id ->
+            <<1,4,0,24,0,0,0,7,0,0,35,32,0,0,0,20,0,0,0,0,0,0,0,1>>
     end.
