@@ -51,7 +51,23 @@ do(<<?NXT_SET_FLOW_FORMAT:32, FormatInt:32>>) ->
                     ?NXFF_OPENFLOW10 -> openflow10
              end,
     #nicira_header{ sub_type = set_flow_format,
-                    body = #nx_set_flow_format{ format = Format }}.
+                    body = #nx_set_flow_format{ format = Format }};
+do(<<?NXT_ROLE_REQUEST:32, RoleInt:32>>) ->
+    Role = case RoleInt of
+               ?NX_ROLE_OTHER  -> other;
+               ?NX_ROLE_MASTER -> master;
+               ?NX_ROLE_SLAVE  -> slave
+           end,
+    #nicira_header{ sub_type = role_request,
+                    body = #nx_role{ role = Role }};
+do(<<?NXT_ROLE_REPLY:32, RoleInt:32>>) ->
+    Role = case RoleInt of
+               ?NX_ROLE_OTHER  -> other;
+               ?NX_ROLE_MASTER -> master;
+               ?NX_ROLE_SLAVE  -> slave
+           end,
+    #nicira_header{ sub_type = role_reply,
+                    body = #nx_role{ role = Role }}.
 
 %%------------------------------------------------------------------------------
 %% Internal functions
