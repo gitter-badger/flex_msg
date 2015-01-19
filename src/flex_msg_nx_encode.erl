@@ -134,9 +134,8 @@ encode_action(#nx_action_learn{ idle_timeout = Idle, hard_timeout = Hard,
       Cookie:8/bytes, FlagsBin:2/bytes, TableIdInt:8,
       0:8, FinIdle:16, FinHard:16, FMSBin/bytes>>;
 encode_action(#nx_action_note{ note = Note }) ->
-    NoteLength = byte_size(Note),
-    Padding = flex_msg_v1_utils:padding(NoteLength + 8, 8) * 8,
-    <<?NXAST_NOTE:16, Note/bytes, 0:Padding>>;
+    BodyBin = <<?NXAST_NOTE:16, Note/bytes>>,
+    pad_to(8, BodyBin);
 encode_action(#nx_action_set_tunnel{ tun_id = TunId }) ->
     <<?NXAST_SET_TUNNEL:16, 0:16, TunId:32>>;
 encode_action(#nx_action_set_tunnel64{ tun_id = TunId }) ->
