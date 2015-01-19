@@ -39,7 +39,14 @@ do(#nicira_header{ sub_type = flow_mod,
     <<?NXT_FLOW_MOD:32, Cookie:8/bytes, TableId:8, CommandInt:8, Idle:16,
       Hard:16, Priority:16, BufferIdInt:32, OutPortInt:16,
       FlagsBin:2/bytes, MatchLen:16, 0:48, (pad_to(8, MatchBin))/bytes,
-      ActionsBin/bytes>>.
+      ActionsBin/bytes>>;
+do(#nicira_header{ sub_type = set_flow_format,
+                   body = #nx_set_flow_format{ format = Format }}) ->
+    FormatInt = case Format of
+                    nxm        -> ?NXFF_NXM;
+                    openflow10 -> ?NXFF_OPENFLOW10
+                end,
+    <<?NXT_SET_FLOW_FORMAT:32, FormatInt:32>>.
 
 %%------------------------------------------------------------------------------
 %% Internal functions

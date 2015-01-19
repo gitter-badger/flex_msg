@@ -333,7 +333,7 @@
 %%%-----------------------------------------------------------------------------
 
 -define(NXFF_OPENFLOW10, 0).
--define(NXFF_NXM, 1).
+-define(NXFF_NXM, 2).
 
 -define(NXM0, 0). % compatible with openflow 1.0
 -define(NXM1, 1). % nicira ext match.

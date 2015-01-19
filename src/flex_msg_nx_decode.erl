@@ -44,7 +44,14 @@ do(<<?NXT_FLOW_MOD:32, Cookie:8/bytes, TableId:8, CommandInt:8, Idle:16,
                             buffer_id = BufferId,
                             match = Match,
                             actions = Actions },
-    #nicira_header{ sub_type = flow_mod, body = FlowMod }.
+    #nicira_header{ sub_type = flow_mod, body = FlowMod };
+do(<<?NXT_SET_FLOW_FORMAT:32, FormatInt:32>>) ->
+    Format = case FormatInt of
+                    ?NXFF_NXM        -> nxm;
+                    ?NXFF_OPENFLOW10 -> openflow10
+             end,
+    #nicira_header{ sub_type = set_flow_format,
+                    body = #nx_set_flow_format{ format = Format }}.
 
 %%------------------------------------------------------------------------------
 %% Internal functions
