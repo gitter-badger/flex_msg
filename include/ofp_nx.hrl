@@ -252,7 +252,7 @@
 
 -define(NXAST_WRITE_METADATA, 22).
 -record(nx_action_write_metadata, {
-          meta_data = <<0:64>> :: binary(),
+          metadata = <<0:64>> :: binary(),
           mask = <<0:64>> :: binary() }).
 -type nx_action_write_metadata() :: #nx_action_write_metadata{}.
 

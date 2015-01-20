@@ -148,13 +148,18 @@ encode_action(#nx_action_fin_timeout{ fin_idle_timeout = FinIdle,
                                       fin_hard_timeout = FinHard }) ->
     <<?NXAST_FIN_TIMEOUT:16, FinIdle:16, FinHard:16, 0:16>>;
 encode_action(#nx_action_reg_move{ n_bits = Nbits, src_offset = SrcOfs,
-                                   dst_offset = DstOfs, src = SrcMatch, dst = DstMatch }) ->
+                                   dst_offset = DstOfs, src = SrcMatch,
+                                   dst = DstMatch }) ->
     SrcMatchBin = encode_match_header(SrcMatch),
     DstMatchBin = encode_match_header(DstMatch),
-    <<?NXAST_REG_MOVE:16, Nbits:16, SrcOfs:16, DstOfs:16, SrcMatchBin:4/bytes, DstMatchBin:4/bytes>>;
-encode_action(#nx_action_reg_load{ offset_nbits = OffSet, dst = DstMatch, value = Value }) ->
+    <<?NXAST_REG_MOVE:16, Nbits:16, SrcOfs:16, DstOfs:16,
+      SrcMatchBin:4/bytes, DstMatchBin:4/bytes>>;
+encode_action(#nx_action_reg_load{ offset_nbits = OffSet,
+                                   dst = DstMatch, value = Value }) ->
     DstMatchBin = encode_match_header(DstMatch),
-    <<?NXAST_REG_LOAD:16, OffSet:16, DstMatchBin:4/bytes, Value:64>>.
+    <<?NXAST_REG_LOAD:16, OffSet:16, DstMatchBin:4/bytes, Value:64>>;
+encode_action(#nx_action_write_metadata{ metadata = Metadata, mask = Mask }) ->
+    <<?NXAST_WRITE_METADATA:16, 0:48, Metadata:8/bytes, Mask:8/bytes>>.
 
 encode_flow_mod_specs(FMS) -> encode_flow_mod_specs(FMS, <<>>).
 

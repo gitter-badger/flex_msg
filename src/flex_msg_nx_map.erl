@@ -6,7 +6,7 @@ nxm_field_bit_length(in_port) -> 16;
 nxm_field_bit_length(eth_dst) -> 48;
 nxm_field_bit_length(eth_src) -> 48;
 nxm_field_bit_length(eth_type) -> 16;
-nxm_field_bit_length(vlan_tci) -> 12;
+nxm_field_bit_length(vlan_tci) -> 16;
 nxm_field_bit_length(ip_tos) -> 8;
 nxm_field_bit_length(ip_src) -> 32;
 nxm_field_bit_length(ip_dst) -> 32;
