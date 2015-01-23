@@ -289,8 +289,8 @@
                        | no_buffer.
 
 -record(ofp_switch_config, {
-          flags :: [ofp_config_flags()],
-          miss_send_len :: integer() }).
+          flags = [] :: [ofp_config_flags()],
+          miss_send_len = 128 :: integer() }).
 -type ofp_switch_config() :: #ofp_switch_config{}.
 
 -record(ofp_get_config_request, {}).

@@ -63,14 +63,14 @@ do(#ofp_header{ type = get_config_reply, xid = Xid,
                 body = #ofp_switch_config{ flags = Flags,
                                            miss_send_len = MissSendLen } }) ->
     Length = ?OFP_SWITCH_CONFIG_SIZE,
-    FlagsBin = flags_to_binary(config_flags, Flags, 4),
+    FlagsBin = flags_to_binary(config_flags, Flags, 2),
     Body = <<FlagsBin:2/bytes, MissSendLen:16>>,
     <<?VERSION:8, ?OFPT_GET_CONFIG_REPLY:8, Length:16, Xid:32, Body/bytes>>;
 do(#ofp_header{ type = set_config, xid = Xid,
                 body = #ofp_switch_config{ flags = Flags,
                                            miss_send_len = MissSendLen } }) ->
     Length = ?OFP_SWITCH_CONFIG_SIZE,
-    FlagsBin = flags_to_binary(config_flags, Flags, 4),
+    FlagsBin = flags_to_binary(config_flags, Flags, 2),
     Body = <<FlagsBin:2/bytes, MissSendLen:16>>,
     <<?VERSION:8, ?OFPT_SET_CONFIG:8, Length:16, Xid:32, Body/bytes>>;
 do(#ofp_header{ type = packet_in, xid = Xid,

@@ -8,6 +8,7 @@ nxm_field_bit_length(eth_src) -> 48;
 nxm_field_bit_length(eth_type) -> 16;
 nxm_field_bit_length(vlan_tci) -> 16;
 nxm_field_bit_length(ip_tos) -> 8;
+nxm_field_bit_length(ip_proto) -> 8;
 nxm_field_bit_length(ip_src) -> 32;
 nxm_field_bit_length(ip_dst) -> 32;
 nxm_field_bit_length(tcp_src) -> 16;

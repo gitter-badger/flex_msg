@@ -16,3 +16,8 @@
 .rebar/
 erl_crash.dump
 *~
+
+# bundle
+.bundle
+.config
+Gemfile.lock
