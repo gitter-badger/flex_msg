@@ -65,7 +65,15 @@ do(#nicira_header{ sub_type = role_reply,
     <<?NXT_ROLE_REPLY:32, RoleInt:32>>;
 do(#nicira_header{ sub_type = set_controller_id,
                    body = #nx_controller_id{ id = Id }}) ->
-    <<?NXT_SET_CONTROLLER_ID:32, 0:48, Id:16>>.
+    <<?NXT_SET_CONTROLLER_ID:32, 0:48, Id:16>>;
+do(#nicira_header{ sub_type = set_async_config,
+                   body = #nx_async_config{ packet_in_mask = PIM,
+                                            port_status_mask = PSM,
+                                            flow_removed_mask = FRM } }) ->
+    PIMBin = flags_to_binary(packet_in_reason, PIM, 8),
+    PSMBin = flags_to_binary(port_reason, PSM, 8),
+    FRMBin = flags_to_binary(flow_removed_reason, FRM, 8),
+    <<?NXT_SET_ASYNC_CONFIG:32, PIMBin:8/bytes, PSMBin:8/bytes, FRMBin:8/bytes>>.
 
 %%------------------------------------------------------------------------------
 %% Internal functions

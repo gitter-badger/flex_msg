@@ -338,6 +338,11 @@
 -record(nx_controller_id, { id :: integer() }).
 -type nx_controller_id() :: #nx_controller_id{}.
 
+-record(nx_async_config, { packet_in_mask = [],
+                           port_status_mask = [],
+                           flow_removed_mask = [] }).
+-type nx_async_config() :: #nx_async_config{}.
+
 %%%-----------------------------------------------------------------------------
 %%% Flow Modification Message
 %%%-----------------------------------------------------------------------------
