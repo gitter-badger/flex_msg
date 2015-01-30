@@ -188,50 +188,6 @@ nx_flow_mod_actions_decode_test() ->
     Msg = #ofp_header{ type = vendor, xid = 13, body = Body },
     ?assertEqual(Msg, DMsg).
 
-nx_set_flow_format_decode_test() ->
-    Binary = packet(set_flow_mod_format),
-    { ok, DMsg, _Rest } = ?MODNAME:decode(Binary),
-    NXData = #nicira_header{ sub_type = set_flow_format,
-                             body = #nx_set_flow_format{ format = nxm }},
-    Body = #ofp_vendor_header{ vendor = nicira,
-                               data = NXData },
-    Msg = #ofp_header{ type = vendor, xid = 7, body = Body },
-    io:format("EMsg: ~w~n", [DMsg]),
-    ?assertEqual(Msg, DMsg).
-
-nx_role_request_decode_test() ->
-    Binary = packet(role_request),
-    { ok, DMsg, _Rest } = ?MODNAME:decode(Binary),
-    NXData = #nicira_header{ sub_type = role_request,
-                             body = #nx_role{ role = master }},
-    Body = #ofp_vendor_header{ vendor = nicira,
-                               data = NXData },
-    Msg = #ofp_header{ type = vendor, xid = 7, body = Body },
-    io:format("EMsg: ~w~n", [DMsg]),
-    ?assertEqual(Msg, DMsg).
-
-nx_role_reply_decode_test() ->
-    Binary = packet(role_reply),
-    { ok, DMsg, _Rest } = ?MODNAME:decode(Binary),
-    NXData = #nicira_header{ sub_type = role_reply,
-                             body = #nx_role{ role = master }},
-    Body = #ofp_vendor_header{ vendor = nicira,
-                               data = NXData },
-    Msg = #ofp_header{ type = vendor, xid = 7, body = Body },
-    io:format("EMsg: ~w~n", [DMsg]),
-    ?assertEqual(Msg, DMsg).
-
-nx_set_controller_id_decode_test() ->
-    Binary = packet(set_controller_id),
-    { ok, DMsg, _Rest } = ?MODNAME:decode(Binary),
-    NXData = #nicira_header{ sub_type = set_controller_id,
-                             body = #nx_controller_id{ id = 1 }},
-    Body = #ofp_vendor_header{ vendor = nicira,
-                               data = NXData },
-    Msg = #ofp_header{ type = vendor, xid = 7, body = Body },
-    io:format("EMsg: ~w~n", [DMsg]),
-    ?assertEqual(Msg, DMsg).
-
 %%------------------------------------------------------------------------------
 %% Packets
 %%------------------------------------------------------------------------------
@@ -271,13 +227,5 @@ packet(Type) ->
               1,255,255,0,24,0,0,35,32,0,6,0,17,0,40,0,0,0,1,32,8,0,1,0,4,
               255,255,0,24,0,0,35,32,0,7,0,31,0,1,32,8,0,0,0,0,0,0,0,98,255,
               255,0,16,0,0,35,32,0,5,0,0,0,0,0,0,255,255,0,16,0,0,35,32,0,19,
-              0,10,0,0,0,0,255,255,0,16,0,0,35,32,0,14,255,248,1,0,0,0>>;
-        set_flow_mod_format ->
-            <<1,4,0,20,0,0,0,7,0,0,35,32,0,0,0,12,0,0,0,2>>;
-        role_request ->
-            <<1,4,0,20,0,0,0,7,0,0,35,32,0,0,0,10,0,0,0,1>>;
-        role_reply ->
-            <<1,4,0,20,0,0,0,7,0,0,35,32,0,0,0,11,0,0,0,1>>;
-        set_controller_id ->
-            <<1,4,0,24,0,0,0,7,0,0,35,32,0,0,0,20,0,0,0,0,0,0,0,1>>
+              0,10,0,0,0,0,255,255,0,16,0,0,35,32,0,14,255,248,1,0,0,0>>
     end.

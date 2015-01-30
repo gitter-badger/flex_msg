@@ -200,39 +200,6 @@ nx_flow_mod_actions_encode_test() ->
     io:format("Packet: ~w~n", [Packet]),
     ?assertEqual(Packet, EMsg).
 
-nx_role_request_encode_test() ->
-    NXData = #nicira_header{ sub_type = role_request,
-                             body = #nx_role{ role = master }},
-    Body = #ofp_vendor_header{ vendor = nicira,
-                               data = NXData },
-    Msg = #ofp_header{ type = vendor, xid = 7, body = Body },
-    EMsg = ?MODNAME:encode(Msg),
-    Packet = packet(role_request),
-    io:format("EMsg: ~w~n", [EMsg]),
-    ?assertEqual(Packet, EMsg).
-
-nx_role_reply_encode_test() ->
-    NXData = #nicira_header{ sub_type = role_reply,
-                             body = #nx_role{ role = master }},
-    Body = #ofp_vendor_header{ vendor = nicira,
-                               data = NXData },
-    Msg = #ofp_header{ type = vendor, xid = 7, body = Body },
-    EMsg = ?MODNAME:encode(Msg),
-    Packet = packet(role_reply),
-    io:format("EMsg: ~w~n", [EMsg]),
-    ?assertEqual(Packet, EMsg).
-
-nx_set_controller_id_encode_test() ->
-    NXData = #nicira_header{ sub_type = set_controller_id,
-                             body = #nx_controller_id{ id = 1 }},
-    Body = #ofp_vendor_header{ vendor = nicira,
-                               data = NXData },
-    Msg = #ofp_header{ type = vendor, xid = 7, body = Body },
-    EMsg = ?MODNAME:encode(Msg),
-    Packet = packet(set_controller_id),
-    io:format("EMsg: ~w~n", [EMsg]),
-    ?assertEqual(Packet, EMsg).
-
 %%------------------------------------------------------------------------------
 %% Packets
 %%------------------------------------------------------------------------------
@@ -265,11 +232,5 @@ packet(Type) ->
               255,0,32,0,0,35,32,0,8,116,101,115,116,32,110,111,116,
               101,32,97,99,116,105,111,110,0,0,0,0,0,0,255,255,0,24,
               0,0,35,32,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,2,255,255,0,16,
-              0,0,35,32,0,14,255,248,1,0,0,0>>;
-        role_request ->
-            <<1,4,0,20,0,0,0,7,0,0,35,32,0,0,0,10,0,0,0,1>>;
-        role_reply ->
-            <<1,4,0,20,0,0,0,7,0,0,35,32,0,0,0,11,0,0,0,1>>;
-        set_controller_id ->
-            <<1,4,0,24,0,0,0,7,0,0,35,32,0,0,0,20,0,0,0,0,0,0,0,1>>
+              0,0,35,32,0,14,255,248,1,0,0,0>>
     end.
