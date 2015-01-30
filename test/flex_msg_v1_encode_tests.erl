@@ -6,17 +6,6 @@
 
 -define(MODNAME, flex_msg_v1).
 
-nx_set_packet_in_format_encode_test() ->
-    NXData = #nicira_header{ sub_type = set_packet_in_format,
-                             body = #nx_set_packet_in_format{ format = nxm }},
-    Body = #ofp_vendor_header{ vendor = nicira,
-                               data = NXData },
-    Msg = #ofp_header{ type = vendor, xid = 6, body = Body },
-    EMsg = ?MODNAME:encode(Msg),
-    Packet = packet(nx_set_packet_in_format),
-    io:format("EMsg: ~w~n", [EMsg]),
-    ?assertEqual(Packet, EMsg).
-
 nx_flow_mod_add_encode_test() ->
     FMS1 = #learn_match_field{
               src = #nxm_field_header{ vendor = nxm0,
@@ -261,8 +250,6 @@ nx_set_controller_id_encode_test() ->
 
 packet(Type) ->
     case Type of
-        nx_set_packet_in_format ->
-            <<1,4,0,20,0,0,0,6,0,0,35,32,0,0,0,16,0,0,0,1>>;
         nx_flow_mod_add ->
             <<1,4,0,136,0,0,0,13,0,0,35,32,0,0,0,13,0,0,0,0,
               0,0,0,0,0,0,0,0,0,0,128,0,255,255,255,255,255,

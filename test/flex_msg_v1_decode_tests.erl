@@ -6,17 +6,6 @@
 
 -define(MODNAME, flex_msg_v1).
 
-nx_set_packet_in_format_decode_test() ->
-    Binary = packet(nx_set_packet_in_format),
-    { ok, DMsg, _Rest } = ?MODNAME:decode(Binary),
-    NXData = #nicira_header{ sub_type = set_packet_in_format,
-                             body = #nx_set_packet_in_format{ format = nxm }},
-    Body = #ofp_vendor_header{ vendor = nicira,
-                               data = NXData },
-    Msg = #ofp_header{ type = vendor, xid = 6, body = Body },
-    io:format("DMsg: ~w~n", [DMsg]),
-    ?assertEqual(Msg, DMsg).
-
 nx_flow_mod_add_decode_test() ->
     Binary = packet(nx_flow_mod_add),
     { ok, DMsg, _Rest } = ?MODNAME:decode(Binary),
@@ -249,14 +238,6 @@ nx_set_controller_id_decode_test() ->
 
 packet(Type) ->
     case Type of
-        nx_set_packet_in_format ->
-            <<16#01,
-              16#04,
-              16#00, 16#14,
-              16#00, 16#00, 16#00, 16#06,
-              16#00, 16#00, 16#23, 16#20,
-              16#00, 16#00, 16#00, 16#10,
-              16#00, 16#00, 16#00, 16#01>>;
         nx_flow_mod_add ->
             <<16#01, 16#04, 16#00, 16#88, 16#00, 16#00, 16#00, 16#0d,
               16#00, 16#00, 16#23, 16#20, 16#00, 16#00, 16#00, 16#0d,
