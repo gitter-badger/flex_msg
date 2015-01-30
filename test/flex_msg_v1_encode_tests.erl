@@ -6,17 +6,6 @@
 
 -define(MODNAME, flex_msg_v1).
 
-nx_flow_mod_table_id_encode_test() ->
-    NXData = #nicira_header{ sub_type = flow_mod_table_id,
-                             body = #nx_flow_mod_table_id{ set = true }},
-    Body = #ofp_vendor_header{ vendor = nicira,
-                               data = NXData },
-    Msg = #ofp_header{ type = vendor, xid = 7, body = Body },
-    EMsg = ?MODNAME:encode(Msg),
-    Packet = packet(nx_flow_mod_table_id),
-    io:format("EMsg: ~w~n", [EMsg]),
-    ?assertEqual(Packet, EMsg).
-
 nx_set_packet_in_format_encode_test() ->
     NXData = #nicira_header{ sub_type = set_packet_in_format,
                              body = #nx_set_packet_in_format{ format = nxm }},
@@ -272,15 +261,6 @@ nx_set_controller_id_encode_test() ->
 
 packet(Type) ->
     case Type of
-        nx_flow_mod_table_id ->
-            <<16#01,
-              16#04,
-              16#00, 16#18,
-              16#00, 16#00, 16#00, 16#07,
-              16#00, 16#00, 16#23, 16#20,
-              16#00, 16#00, 16#00, 16#0f,
-              16#01,
-              16#00, 16#00, 16#00, 16#00, 16#00, 16#00, 16#00>>;
         nx_set_packet_in_format ->
             <<1,4,0,20,0,0,0,6,0,0,35,32,0,0,0,16,0,0,0,1>>;
         nx_flow_mod_add ->
