@@ -38,7 +38,7 @@ nxm_field_bit_length(nx_icmpv6_code) -> 8;
 nxm_field_bit_length(nx_nd_target) -> 128;
 nxm_field_bit_length(nx_nd_sll) -> 48;
 nxm_field_bit_length(nx_nd_tll) -> 48;
-nxm_field_bit_length(nx_ip_flag) -> 8;
+nxm_field_bit_length(nx_ip_frag) -> 8;
 nxm_field_bit_length(nx_ipv6_label) -> 32;
 nxm_field_bit_length(nx_ip_ecn) -> 8;
 nxm_field_bit_length(nx_ip_ttl) -> 8;
