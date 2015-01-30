@@ -1,4 +1,6 @@
-flex_msg [![Build Status](https://travis-ci.org/shun159/flex_msg.svg?branch=master)](https://travis-ci.org/shun159/flex_msg)
+# flex_msg
+
+[![Build Status](https://travis-ci.org/shun159/flex_msg.svg?branch=master)](https://travis-ci.org/shun159/flex_msg)[![Coverage Status](https://coveralls.io/repos/shun159/flex_msg/badge.svg?branch=ofp10%2Fsupport_nx)](https://coveralls.io/r/shun159/flex_msg?branch=ofp10%2Fsupport_nx)
 ========
 
 Erlang OpenFlow Packet Library.

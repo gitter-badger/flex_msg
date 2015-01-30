@@ -1,8 +1,9 @@
 -module(flex_msg_v1_decode).
 
--export([do/1]).
+-export([do/1, decode_actions/1]).
 
 -include("ofp_v1.hrl").
+-include("ofp_nx.hrl").
 
 %%------------------------------------------------------------------------------
 %% API functions
@@ -44,7 +45,13 @@ do(<<?VERSION:8, ?OFPT_VENDOR:8, Length:16, Xid:32, Binary2/bytes>>) ->
     BodyLength = Length - ?OFP_HEADER_SIZE,
     <<BodyBin:BodyLength/bytes, Rest/bytes>> = Binary2,
     <<Vendor:32, Data/bytes>> = BodyBin,
-    Body = #ofp_vendor_header{ vendor = Vendor, data = Data },
+    Body = case Vendor of
+               ?NX_VENDOR_ID ->
+                   #ofp_vendor_header{ vendor = nicira,
+                                       data = flex_msg_nx_decode:do(Data) };
+               _ ->
+                   #ofp_vendor_header{ vendor = Vendor, data = Data }
+           end,
     DMsg = #ofp_header{ type = vendor, xid = Xid, body = Body },
     { ok, DMsg, Rest };
 do(<<?VERSION:8, ?OFPT_FEATURES_REQUEST:8, Length:16, Xid:32, Binary2/bytes>>) ->
@@ -393,7 +400,13 @@ decode_action(<<?OFPAT_ENQUEUE:16, 16:16, PortInt:16, _:48/bits, QueueID:32>>) -
     Port = get_id(port_no, PortInt),
     #ofp_action_enqueue{ port = Port, queue_id = QueueID };
 decode_action(<<?OFPAT_VENDOR:16, _Length:16, Vendor:32, Data/bytes>>) ->
-    #ofp_action_vendor{ vendor = Vendor, data = Data }.
+    case Vendor of
+        ?NX_VENDOR_ID ->
+            #ofp_action_vendor{ vendor = nicira,
+                                data = flex_msg_nx_decode:decode_action(Data) };
+        _ ->
+            #ofp_action_vendor{ vendor = Vendor, data = Data }
+    end.
 
 decode_match(Binary) ->
     <<Wildcards:32/integer, InPort:16/integer,

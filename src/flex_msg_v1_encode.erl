@@ -1,8 +1,9 @@
 -module(flex_msg_v1_encode).
 
--export([do/1]).
+-export([do/1, encode_actions/1]).
 
 -include("ofp_v1.hrl").
+-include("ofp_nx.hrl").
 
 %%------------------------------------------------------------------------------
 %% API functions
@@ -27,6 +28,13 @@ do(#ofp_header{ type = echo_reply, xid = Xid,
                 body = #ofp_echo_reply{ data = Data } }) ->
     Length = ?OFP_ECHO_REPLY_SIZE + byte_size(Data),
     <<?VERSION:8, ?OFPT_ECHO_REPLY:8, Length:16, Xid:32, Data/bytes>>;
+do(#ofp_header{ type = vendor, xid = Xid,
+                body = #ofp_vendor_header{ vendor = nicira, data = Nx } }) ->
+    Data = flex_msg_nx_encode:do(Nx),
+    Body = <<?NX_VENDOR_ID:32, Data/bytes>>,
+    BodyLen = byte_size(Body),
+    Length = ?OFP_HEADER_SIZE + BodyLen,
+    <<?VERSION:8, ?OFPT_VENDOR:8, Length:16, Xid:32, Body/bytes>>;
 do(#ofp_header{ type = vendor, xid = Xid,
                 body = #ofp_vendor_header{ vendor = Vendor, data = Data } }) ->
     Length = ?OFP_VENDOR_HEADER_SIZE + byte_size(Data),
@@ -55,14 +63,14 @@ do(#ofp_header{ type = get_config_reply, xid = Xid,
                 body = #ofp_switch_config{ flags = Flags,
                                            miss_send_len = MissSendLen } }) ->
     Length = ?OFP_SWITCH_CONFIG_SIZE,
-    FlagsBin = flags_to_binary(config_flags, Flags, 4),
+    FlagsBin = flags_to_binary(config_flags, Flags, 2),
     Body = <<FlagsBin:2/bytes, MissSendLen:16>>,
     <<?VERSION:8, ?OFPT_GET_CONFIG_REPLY:8, Length:16, Xid:32, Body/bytes>>;
 do(#ofp_header{ type = set_config, xid = Xid,
                 body = #ofp_switch_config{ flags = Flags,
                                            miss_send_len = MissSendLen } }) ->
     Length = ?OFP_SWITCH_CONFIG_SIZE,
-    FlagsBin = flags_to_binary(config_flags, Flags, 4),
+    FlagsBin = flags_to_binary(config_flags, Flags, 2),
     Body = <<FlagsBin:2/bytes, MissSendLen:16>>,
     <<?VERSION:8, ?OFPT_SET_CONFIG:8, Length:16, Xid:32, Body/bytes>>;
 do(#ofp_header{ type = packet_in, xid = Xid,
@@ -405,10 +413,19 @@ encode_action(#ofp_action_header{ body = #ofp_action_vendor{} } = Action) ->
     Type = Action#ofp_action_header.type,
     Body = Action#ofp_action_header.body,
     Vendor = Body#ofp_action_vendor.vendor,
-    Data = Body#ofp_action_vendor.data,
-    Vendorlength = byte_size(Data) + 8,
-    ActionType = get_id(actions, Type),
-    <<ActionType:16, Vendorlength:16, Vendor:32, Data/bytes>>.
+    case Vendor of
+        nicira ->
+            VendorData = Body#ofp_action_vendor.data,
+            Data = flex_msg_nx_encode:encode_action(VendorData),
+            Vendorlength = byte_size(Data) + 8,
+            ActionType = get_id(actions, Type),
+            <<ActionType:16, Vendorlength:16, ?NX_VENDOR_ID:32, Data/bytes>>;
+        _ ->
+            Data = Body#ofp_action_vendor.data,
+            Vendorlength = byte_size(Data) + 8,
+            ActionType = get_id(actions, Type),
+            <<ActionType:16, Vendorlength:16, Vendor:32, Data/bytes>>
+    end.
 
 encode_ports(Ports) -> encode_ports(Ports, <<>>).
 

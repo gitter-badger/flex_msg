@@ -4,6 +4,9 @@
          flags_to_binary/4,
          get_enum_name/3,
          get_enum_value/3,
+         cut_bits/3,
+         uncut_bits/2,
+         padding/2,
          strip_string/1,
          encode_string/2]).
 
@@ -33,6 +36,28 @@ get_enum_value(EnumMod, Enum, Atom) when is_atom(Atom) ->
     end;
 get_enum_value(_, _, Int) when is_integer(Int) ->
     Int.
+
+-spec cut_bits(binary(), integer(), non_neg_integer()) -> binary().
+cut_bits(Binary, Bits, WireBits) ->
+    BitSize = bit_size(Binary),
+    <<Int:BitSize>> = Binary,
+    TruncBin = <<Int:Bits>>,
+    Padding = WireBits - Bits,
+    <<0:Padding, TruncBin/bits>>.
+
+-spec uncut_bits(binary(), integer()) -> binary().
+uncut_bits(Binary, RequiredBitSize) ->
+    BitSize = bit_size(Binary),
+    PaddingSize = BitSize - RequiredBitSize,
+    <<_:PaddingSize, Value:RequiredBitSize/bits>> = Binary,
+    Value.
+
+-spec padding(integer(), integer()) -> integer().
+padding(Length, Padding) ->
+    case Padding - (Length rem Padding) of
+        Padding -> 0;
+        Else    -> Else
+    end.
 
 -spec binary_to_flags(atom(), atom(), binary()) -> [atom()].
 binary_to_flags(EnumMod, Type, Binary) ->

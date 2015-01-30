@@ -232,7 +232,7 @@
 -type ofp_action_tp_port() :: #ofp_action_tp_port{}.
 
 -record(ofp_action_vendor, {
-          vendor :: integer(),
+          vendor :: ofp_vendor_code(),
           data = <<>> :: binary() }).
 -type ofp_action_vendor() :: #ofp_action_vendor{}.
 
@@ -289,8 +289,8 @@
                        | no_buffer.
 
 -record(ofp_switch_config, {
-          flags :: [ofp_config_flags()],
-          miss_send_len :: integer() }).
+          flags = [] :: [ofp_config_flags()],
+          miss_send_len = 128 :: integer() }).
 -type ofp_switch_config() :: #ofp_switch_config{}.
 
 -record(ofp_get_config_request, {}).
@@ -503,11 +503,11 @@
           tx_errors = 0 :: integer() }).
 -type ofp_queue_stats() :: #ofp_queue_stats{}.
 
--record(ofp_vendor_stats_request, { vendor :: integer(),
+-record(ofp_vendor_stats_request, { vendor :: ofp_vendor_code(),
                                     data = <<>> :: binary() }).
 -type ofp_vendor_stats_request() :: #ofp_vendor_stats_request{}.
 
--record(ofp_vendor_stats, { vendor :: integer(),
+-record(ofp_vendor_stats, { vendor :: ofp_vendor_code(),
                             data = <<>> :: binary() }).
 -type ofp_vendor_stats() :: #ofp_vendor_stats{}.
 
@@ -693,8 +693,11 @@
 
 -define(OFP_VENDOR_HEADER_SIZE, 12).
 
+-type ofp_vendor_code() :: integer()
+                         | nicira_ext.
+
 -record(ofp_vendor_header, {
-          vendor :: integer(),
+          vendor :: ofp_vendor_code(),
           data = <<>> :: binary() }).
 -type ofp_vendor_header() :: #ofp_vendor_header{}.
 
