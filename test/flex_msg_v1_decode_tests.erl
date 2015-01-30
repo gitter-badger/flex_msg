@@ -6,16 +6,6 @@
 
 -define(MODNAME, flex_msg_v1).
 
-vendor_stats_reply_decode_test() ->
-    Binary = packet(vendor_stats_reply),
-    { ok, DMsg, _Rest } = ?MODNAME:decode(Binary),
-    Body = #ofp_stats_reply{ type = vendor, flags = [],
-                             body = #ofp_vendor_stats{ vendor = 16#00002320,
-                                                       data = <<0,0,0,0,0,0,0,0>> } },
-    Msg = #ofp_header{ type = stats_reply, xid = 5, body = Body },
-    io:format("DMsg: ~w~n", [DMsg]),
-    ?assertEqual(Msg, DMsg).
-
 nx_flow_mod_table_id_decode_test() ->
     Binary = packet(nx_flow_mod_table_id),
     { ok, DMsg, _Rest } = ?MODNAME:decode(Binary),
@@ -270,10 +260,6 @@ nx_set_controller_id_decode_test() ->
 
 packet(Type) ->
     case Type of
-        vendor_stats_reply ->
-            <<16#01, 16#11, 16#00, 16#18, 16#00, 16#00, 16#00, 16#05, 16#ff,
-              16#ff, 16#00, 16#00, 16#00, 16#00, 16#23, 16#20, 16#00, 16#00,
-              16#00, 16#00, 16#00, 16#00, 16#00, 16#00>>;
         nx_flow_mod_table_id ->
             <<16#01,
               16#04,
