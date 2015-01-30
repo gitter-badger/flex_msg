@@ -200,17 +200,6 @@ nx_flow_mod_actions_encode_test() ->
     io:format("Packet: ~w~n", [Packet]),
     ?assertEqual(Packet, EMsg).
 
-nx_set_flow_format_encode_test() ->
-    NXData = #nicira_header{ sub_type = set_flow_format,
-                             body = #nx_set_flow_format{ format = nxm }},
-    Body = #ofp_vendor_header{ vendor = nicira,
-                               data = NXData },
-    Msg = #ofp_header{ type = vendor, xid = 7, body = Body },
-    EMsg = ?MODNAME:encode(Msg),
-    Packet = packet(set_flow_mod_format),
-    io:format("EMsg: ~w~n", [EMsg]),
-    ?assertEqual(Packet, EMsg).
-
 nx_role_request_encode_test() ->
     NXData = #nicira_header{ sub_type = role_request,
                              body = #nx_role{ role = master }},
@@ -277,8 +266,6 @@ packet(Type) ->
               101,32,97,99,116,105,111,110,0,0,0,0,0,0,255,255,0,24,
               0,0,35,32,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,2,255,255,0,16,
               0,0,35,32,0,14,255,248,1,0,0,0>>;
-        set_flow_mod_format ->
-            <<1,4,0,20,0,0,0,7,0,0,35,32,0,0,0,12,0,0,0,2>>;
         role_request ->
             <<1,4,0,20,0,0,0,7,0,0,35,32,0,0,0,10,0,0,0,1>>;
         role_reply ->
