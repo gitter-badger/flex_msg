@@ -20,6 +20,8 @@ do(<<?VERSION:8, ?OFPT_HELLO:8, Length:16, Xid:32, Binary2/bytes>>) ->
     <<_:BodyLength/bytes, Rest/bytes>> = Binary2,
     DMsg = #ofp_header{ type = hello, xid = Xid, body = #ofp_hello{} },
     { ok, DMsg, Rest };
+do(<<_:8, ?OFPT_HELLO:8, Length:16, Xid:32, Binary2/bytes>>) ->
+    { error, { hello_failed, incompatible } };
 do(<<?VERSION:8, ?OFPT_ERROR:8, Length:16, Xid:32, Binary2/bytes>>) ->
     BodyLength = Length - ?OFP_HEADER_SIZE,
     <<BodyBin:BodyLength/bytes, Rest/bytes>> = Binary2,
