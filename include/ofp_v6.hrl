@@ -15,6 +15,322 @@
 -type ofp_hello() :: #ofp_hello{}.
 
 %%%-----------------------------------------------------------------------------
+%%% Error Message(7.5.4)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_error_type() :: hello_failed
+                        | bad_request
+                        | bad_action
+                        | bad_instruction
+                        | bad_match
+                        | flow_mod_failed
+                        | group_mod_failed
+                        | port_mod_failed
+                        | table_mod_failed
+                        | queue_op_failed
+                        | switch_config_failed
+                        | role_request_failed
+                        | meter_mod_failed
+                        | table_features_failed
+                        | bad_priority
+                        | async_config_failed
+                        | bundle_failed
+                        | experimenter.
+
+%%%-----------------------------------------------------------------------------
+%%% Hello Failed error codes(7.5.4.1)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_hello_failed_code() :: incompatible
+                               | eperm.
+
+%%%-----------------------------------------------------------------------------
+%%% Bad Request error codes(7.5.4.2)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_bad_request_code() :: bad_version
+                              | bad_type
+                              | bad_multipart
+                              | bad_experimenter
+                              | bad_exp_type
+                              | buffer_empty
+                              | buffer_unknown
+                              | bad_table_id
+                              | is_slave
+                              | bad_port
+                              | bad_packet
+                              | multipart_buffer_overflow
+                              | multipart_request_timeout
+                              | multipart_reply_timeout
+                              | multipart_bad_sched
+                              | pipeline_fields_only
+                              | unknown.
+
+%%%-----------------------------------------------------------------------------
+%%% Bad Action error codes(7.5.4.3)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_bad_action_code() :: bad_type
+                             | bad_len
+                             | bad_experimenter
+                             | bad_exp_type
+                             | bad_out_port
+                             | bad_argument
+                             | eperm
+                             | too_many
+                             | bad_queue
+                             | bad_out_group
+                             | match_inconsistent
+                             | unsupported_order
+                             | bad_tag
+                             | bad_set_type
+                             | bad_set_len
+                             | bad_set_argument
+                             | bad_set_mask.
+
+%%%-----------------------------------------------------------------------------
+%%% Bad Instruction error codes(7.5.4.4)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_bad_instruction_code() :: unknown_inst
+                                  | unsup_inst
+                                  | bad_table_id
+                                  | unsup_metadata
+                                  | unsup_metadata_mask
+                                  | bad_experimenter
+                                  | bad_exp_type
+                                  | bad_len
+                                  | eperm
+                                  | dup_inst.
+
+%%%-----------------------------------------------------------------------------
+%%% Bad Match error codes(7.5.4.5)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_bad_match_code() :: bad_type
+                            | bad_len
+                            | bad_tag
+                            | bad_dl_addr_mask
+                            | bad_nw_addr_mask
+                            | bad_wildcards
+                            | bad_field
+                            | bad_value
+                            | bad_mask
+                            | bad_prereq
+                            | dup_field
+                            | eperm.
+
+%%%-----------------------------------------------------------------------------
+%%% Flow-mod Failed error codes(7.5.4.6)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_flow_mod_failed_code() :: unknown
+                                  | table_full
+                                  | bad_table_id
+                                  | overlap
+                                  | eperm
+                                  | bad_timeout
+                                  | bad_command
+                                  | bad_flags
+                                  | cant_sync
+                                  | bad_priority
+                                  | is_sync.
+
+%%%-----------------------------------------------------------------------------
+%%% Group-mod Failed error codes(7.5.4.7)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_group_mod_failed_code() :: group_exists
+                                   | invaild_group
+                                   | weight_unsupported
+                                   | out_of_groups
+                                   | out_of_buckets
+                                   | chaining_unsupported
+                                   | watch_unsupported
+                                   | loop
+                                   | unknown_group
+                                   | chained_group
+                                   | bad_type
+                                   | bad_command
+                                   | bad_bucket
+                                   | bad_watch
+                                   | eperm
+                                   | unknown_bucket
+                                   | bucket_exists.
+
+%%%-----------------------------------------------------------------------------
+%%% Port-mod Failed error codes(7.5.4.8)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_port_mod_failed_code() :: bad_port
+                                  | bad_hw_addr
+                                  | bad_config
+                                  | bad_adverise
+                                  | eperm.
+
+%%%-----------------------------------------------------------------------------
+%%% Table-mod Failed error codes(7.5.4.9)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_table_mod_failed_code() :: bad_table
+                                   | bad_config
+                                   | eperm.
+
+%%%-----------------------------------------------------------------------------
+%%% Queue-op Failed error codes(7.5.4.10)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_queue_op_failed_code() :: bad_port
+                                  | bad_queue
+                                  | eperm.
+
+%%%-----------------------------------------------------------------------------
+%%% Switch Config Failed error codes(7.5.4.11)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_switch_config_failed_code() :: bad_flags
+                                       | bad_len
+                                       | eperm.
+
+%%%-----------------------------------------------------------------------------
+%%% Role Request Failed error codes(7.5.4.12)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_role_request_failed_code() :: stale
+                                      | unsup
+                                      | bad_role
+                                      | id_unsup
+                                      | id_in_use.
+
+%%%-----------------------------------------------------------------------------
+%%% Meter-mod Failed error codes(7.5.4.13)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_meter_mod_failed_code() :: unknown
+                                   | meter_exists
+                                   | invaild_meter
+                                   | unknown_meter
+                                   | bad_command
+                                   | bad_flags
+                                   | bad_rate
+                                   | bad_burst
+                                   | bad_band
+                                   | bad_band_value
+                                   | out_of_meters
+                                   | out_of_bands.
+
+%%%-----------------------------------------------------------------------------
+%%% Table-features Failed error codes(7.5.4.14)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_table_features_failed_code() :: bad_table
+                                        | bad_metadata
+                                        | eperm
+                                        | bad_capa
+                                        | bad_max_ent
+                                        | bad_features
+                                        | bad_command
+                                        | too_many.
+
+%%%-----------------------------------------------------------------------------
+%%% Bad Property Failed error codes(7.5.4.15)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_bad_property_code() :: bad_type
+                               | bad_len
+                               | bad_value
+                               | too_many
+                               | dup_type
+                               | bad_experimenter
+                               | bad_exp_type
+                               | bad_exp_value
+                               | eperm.
+
+%%%-----------------------------------------------------------------------------
+%%% Async Config Failed error codes(7.5.4.16)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_async_config_failed_code() :: invalid
+                                      | unsupported
+                                      | eperm.
+
+%%%-----------------------------------------------------------------------------
+%%% Flow-monitor Failed error codes(7.5.4.17)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_flow_monitor_failed_code() :: unknown
+                                      | monitor_exists
+                                      | invalid_monitor
+                                      | unknown_monitor
+                                      | bad_command
+                                      | bad_flags
+                                      | bad_table_id
+                                      | bad_out.
+
+%%%-----------------------------------------------------------------------------
+%%% Bundle Failed error codes(7.5.4.18)
+%%%-----------------------------------------------------------------------------
+
+-type ofp_bundle_failed_code() :: unknown
+                                | eperm
+                                | bad_id
+                                | bundle_exists
+                                | bundle_closed
+                                | out_of_bundles
+                                | bad_type
+                                | bad_flags
+                                | msg_bad_len
+                                | msg_bad_xid
+                                | msg_unsup
+                                | msg_conflict
+                                | msg_too_many
+                                | msg_failed
+                                | timeout
+                                | bundle_in_progress
+                                | sched_not_supported
+                                | sched_future
+                                | sched_past.
+
+%%%-----------------------------------------------------------------------------
+%%% Experimenter Failed error codes(7.5.4.19)
+%%%-----------------------------------------------------------------------------
+
+-define(OFP_ERROR_SIZE, 12).
+
+-record(ofp_error_experimenter, { version = ?VERSION :: integer(),
+                                  xid = 0 :: integer(),
+                                  exp_code = 0 :: integer(),
+                                  experimenter = 0 :: integer(),
+                                  data = <<>> :: binary() }).
+-type ofp_error_experimenter() :: #ofp_error_experimenter{}.
+
+-type ofp_error_code() :: ofp_hello_failed_code()
+                        | ofp_bad_request_code()
+                        | ofp_bad_action_code()
+                        | ofp_bad_instruction_code()
+                        | ofp_bad_match_code()
+                        | ofp_flow_mod_failed_code()
+                        | ofp_group_mod_failed_code()
+                        | ofp_port_mod_failed_code()
+                        | ofp_table_mod_failed_code()
+                        | ofp_queue_op_failed_code()
+                        | ofp_switch_config_failed_code()
+                        | ofp_role_request_failed_code()
+                        | ofp_meter_mod_failed_code()
+                        | ofp_table_features_failed_code()
+                        | ofp_bad_property_code()
+                        | ofp_async_config_failed_code()
+                        | ofp_flow_monitor_failed_code()
+                        | ofp_bundle_failed_code().
+
+-record(ofp_error, { version = ?VERSION :: integer(),
+                     xid = 0 :: integer(),
+                     type :: ofp_error_type(),
+                     code :: ofp_error_code(),
+                     data = <<>> :: binary() }).
+-type ofp_error() :: #ofp_error{}.
+
+%%%-----------------------------------------------------------------------------
 %%% OpenFlow Header (7.1.1)
 %%%-----------------------------------------------------------------------------
 

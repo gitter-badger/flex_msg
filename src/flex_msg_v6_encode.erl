@@ -11,7 +11,13 @@
 do(#ofp_hello{ xid = Xid, elements = Elem }) ->
     BodyBin = hello_elements(Elem, []),
     Length = ?OFP_HELLO_SIZE + byte_size(BodyBin),
-    <<?VERSION:8, ?OFPT_HELLO:8, Length:16, Xid:32, BodyBin/bytes>>.
+    <<?VERSION:8, ?OFPT_HELLO:8, Length:16, Xid:32, BodyBin/bytes>>;
+do(#ofp_error{ xid = Xid, type = Type, code = Code, data = Data }) ->
+    TypeInt = flex_msg_v6_enum:to_int(error_type, Type),
+    CodeInt = flex_msg_v6_enum:to_int(Type, Code),
+    Length = ?OFP_ERROR_SIZE + byte_size(Data),
+    <<?VERSION:8, ?OFPT_ERROR:8, Length:16, Xid:32,
+      TypeInt:16, CodeInt:16, Data/bytes>>.
 
 hello_elements([], Acc) -> list_to_binary(Acc);
 hello_elements([H | Rest], Acc) -> hello_elements(Rest, [hello_element(H)|Acc]).

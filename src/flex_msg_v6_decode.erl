@@ -10,7 +10,12 @@
 
 do(<<?VERSION:8, ?OFPT_HELLO:8, _Length:16, Xid:32, BodyBin/bytes>>) ->
     Body = hello_elements(BodyBin, []),
-    #ofp_hello{ xid = Xid, elements = Body }.
+    #ofp_hello{ xid = Xid, elements = Body };
+do(<<?VERSION:8, ?OFPT_ERROR:8, _Length:16, Xid:32, BodyBin/bytes>>) ->
+    <<TypeInt:16, CodeInt:16, Data/bytes>> = BodyBin,
+    Type = flex_msg_v6_enum:to_atom(error_type, TypeInt),
+    Code = flex_msg_v6_enum:to_atom(Type, CodeInt),
+    #ofp_error{ xid = Xid, type = Type, code = Code, data = Data }.
 
 hello_elements(<<>>, Acc) -> Acc;
 hello_elements(Binary, Acc) ->
