@@ -1,5 +1,7 @@
 # flex_msg
 
+[![Join the chat at https://gitter.im/shun159/flex_msg](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/shun159/flex_msg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/shun159/flex_msg.svg?branch=master)](https://travis-ci.org/shun159/flex_msg)[![Coverage Status](https://coveralls.io/repos/shun159/flex_msg/badge.svg?branch=ofp10%2Fsupport_nx)](https://coveralls.io/r/shun159/flex_msg?branch=ofp10%2Fsupport_nx)
 ========
 
